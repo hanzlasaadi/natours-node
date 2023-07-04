@@ -4,25 +4,11 @@ const fs = require('fs');
 const app = express();
 app.use(express.json()); //MIDDLEWARE: stores data between request & response
 
-const port = 6969;
-
-// app.get('/', (req, res) => {
-//   console.log(req.url);
-//   res
-//     .status(200)
-//     .send({ message: 'HELLOOO, its me...', name: 'Natours by Hanzla' });
-// });
-
-// app.post('/', (req, res) => {
-//   console.log(req.url);
-//   res.status(200).send('You just posted on the mfucking SERVER.');
-// });
-
 const tours = JSON.parse(
   fs.readFileSync(`${__dirname}/dev-data/data/tours-simple.json`, 'utf-8')
 );
 
-app.get('/api/v1/tours', (req, res) => {
+const getAllTours = (req, res) => {
   console.log(req.url);
   res.send({
     status: 'success',
@@ -31,10 +17,9 @@ app.get('/api/v1/tours', (req, res) => {
       tours: tours,
     },
   });
-});
+};
 
-//REsponding to URL parameters---------
-app.get('/api/v1/tours/:id/:x?/:y?', (req, res) => {
+const getATour = (req, res) => {
   console.log(req.params);
   const id = req.params.id * 1;
   const tour = tours.find((val) => val.id === id);
@@ -53,10 +38,9 @@ app.get('/api/v1/tours/:id/:x?/:y?', (req, res) => {
       tour: tour,
     },
   });
-});
-//REsponding to URL parameters---------
+};
 
-app.post('/api/v1/tours', (req, res) => {
+const addNewTour = (req, res) => {
   console.log(req.url);
   console.log(req.body);
 
@@ -79,10 +63,9 @@ app.post('/api/v1/tours', (req, res) => {
     }
   );
   // res.send('POSTed on the server');
-});
+};
 
-//UPDATE
-app.patch('/api/v1/tours/:id', (req, res) => {
+const updateTour = (req, res) => {
   console.log(req.params);
   const id = req.params.id;
 
@@ -99,10 +82,9 @@ app.patch('/api/v1/tours/:id', (req, res) => {
       tour: 'Updated tour...',
     },
   });
-});
+};
 
-//DELETE
-app.delete('/api/v1/tours/:id', (req, res) => {
+const deleteTour = (req, res) => {
   console.log(req.params);
   const id = req.params.id;
 
@@ -119,8 +101,28 @@ app.delete('/api/v1/tours/:id', (req, res) => {
       tour: null,
     },
   });
-});
+};
 
+// //Get All Tours
+// app.get('/api/v1/tours', getAllTours);
+// //Add Tour
+// app.post('/api/v1/tours', addNewTour);
+// //Responding to URL parameters---------
+// app.get('/api/v1/tours/:id/:x?/:y?', getATour);
+// //UPDATE
+// app.patch('/api/v1/tours/:id', updateTour);
+// //DELETE
+// app.delete('/api/v1/tours/:id', deleteTour);
+
+app.route('/api/v1/tours').get(getAllTours).post(addNewTour);
+
+app
+  .route('/api/v1/tours/:id')
+  .get(getATour)
+  .patch(updateTour)
+  .delete(deleteTour);
+
+const port = 6969;
 app.listen(port, () => {
   console.log(`Listening on port ${port} and being HORNY...`);
 });

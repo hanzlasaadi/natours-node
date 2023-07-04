@@ -2,7 +2,12 @@ const express = require('express');
 const fs = require('fs');
 
 const app = express();
-app.use(express.json()); //MIDDLEWARE: stores data between request & response
+app.use(express.json()); //MIDDLEWARE: stores data between request & response - get access of request body on the request object
+
+app.use((req, res, next) => {
+  console.log('HELLOO......from the middleware');
+  next();
+});
 
 const tours = JSON.parse(
   fs.readFileSync(`${__dirname}/dev-data/data/tours-simple.json`, 'utf-8')
@@ -34,6 +39,7 @@ const getATour = (req, res) => {
 
   res.status(200).send({
     status: 'success',
+    requestedTime: req.requestedTime,
     data: {
       tour: tour,
     },
@@ -116,6 +122,12 @@ const deleteTour = (req, res) => {
 
 app.route('/api/v1/tours').get(getAllTours).post(addNewTour);
 
+//This won't work on the ☝ route because ORDER matters in Express.js
+app.use((req, res, next) => {
+  req.requestedTime = new Date().toISOString();
+  // console.log(`Added requested time ${req.requestedTime} in the Request Object`);
+  next();
+});
 app
   .route('/api/v1/tours/:id')
   .get(getATour)

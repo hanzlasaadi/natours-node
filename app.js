@@ -1,7 +1,10 @@
 const express = require('express');
 const fs = require('fs');
+const morgan = require('morgan');
 
 const app = express();
+
+//-----MIDDLEWAREs-----
 app.use(express.json()); //MIDDLEWARE: stores data between request & response - get access of request body on the request object
 
 app.use((req, res, next) => {
@@ -9,10 +12,13 @@ app.use((req, res, next) => {
   next();
 });
 
+app.use(morgan('dev'));
+
 const tours = JSON.parse(
   fs.readFileSync(`${__dirname}/dev-data/data/tours-simple.json`, 'utf-8')
 );
 
+//------ROUTE HANDLERS------
 const getAllTours = (req, res) => {
   console.log(req.url);
   res.send({
@@ -108,6 +114,8 @@ const deleteTour = (req, res) => {
     },
   });
 };
+
+//------ROUTES------
 
 // //Get All Tours
 // app.get('/api/v1/tours', getAllTours);

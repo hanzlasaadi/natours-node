@@ -5,6 +5,13 @@ const morgan = require('morgan');
 const app = express();
 
 //-----MIDDLEWAREs-----
+//This will only work if before route handler because ORDER matters in Express.js
+app.use((req, res, next) => {
+  req.requestedTime = new Date().toISOString();
+  // console.log(`Added requested time ${req.requestedTime} in the Request Object`);
+  next();
+});
+
 app.use(express.json()); //MIDDLEWARE: stores data between request & response - get access of request body on the request object
 
 app.use((req, res, next) => {
@@ -18,9 +25,9 @@ const tours = JSON.parse(
   fs.readFileSync(`${__dirname}/dev-data/data/tours-simple.json`, 'utf-8')
 );
 
-//------ROUTE HANDLERS------
+//------ROUTE HANDLERS/CONTROLLERS------
 const getAllTours = (req, res) => {
-  console.log(req.url);
+  // console.log(req.url);
   res.send({
     status: 'success',
     results: tours.length,
@@ -53,7 +60,7 @@ const getATour = (req, res) => {
 };
 
 const addNewTour = (req, res) => {
-  console.log(req.url);
+  // console.log(req.url);
   console.log(req.body);
 
   const newID = tours[tours.length - 1].id + 1;
@@ -115,32 +122,53 @@ const deleteTour = (req, res) => {
   });
 };
 
+const getAllUsers = (req, res) => {
+  res.status(500).json({
+    status: 'Server Down',
+    message: 'No Data Found',
+  });
+};
+const addNewUser = (req, res) => {
+  res.status(500).json({
+    status: 'Server Down',
+    message: 'No Data Found',
+  });
+};
+const getOneUser = (req, res) => {
+  res.status(500).json({
+    status: 'Server Down',
+    message: 'No Data Found',
+  });
+};
+const updateUser = (req, res) => {
+  res.status(500).json({
+    status: 'Server Down',
+    message: 'No Data Found',
+  });
+};
+const deleteUser = (req, res) => {
+  res.status(500).json({
+    status: 'Server Down',
+    message: 'No Data Found',
+  });
+};
+
 //------ROUTES------
+const userRouter = express.Router();
+const tourRouter = express.Router();
 
-// //Get All Tours
-// app.get('/api/v1/tours', getAllTours);
-// //Add Tour
-// app.post('/api/v1/tours', addNewTour);
-// //Responding to URL parameters---------
-// app.get('/api/v1/tours/:id/:x?/:y?', getATour);
-// //UPDATE
-// app.patch('/api/v1/tours/:id', updateTour);
-// //DELETE
-// app.delete('/api/v1/tours/:id', deleteTour);
+tourRouter.route('/').get(getAllTours).post(addNewTour);
 
-app.route('/api/v1/tours').get(getAllTours).post(addNewTour);
+tourRouter.route('/:id').get(getATour).patch(updateTour).delete(deleteTour);
 
-//This won't work on the ☝ route because ORDER matters in Express.js
-app.use((req, res, next) => {
-  req.requestedTime = new Date().toISOString();
-  // console.log(`Added requested time ${req.requestedTime} in the Request Object`);
-  next();
-});
-app
-  .route('/api/v1/tours/:id')
-  .get(getATour)
-  .patch(updateTour)
-  .delete(deleteTour);
+app.use('/api/v1/tours', tourRouter);
+
+//------USERS------
+userRouter.route('/').get(getAllUsers).post(addNewUser);
+
+userRouter.route('/:id').get(getOneUser).patch(updateUser).delete(deleteUser);
+
+app.use('/api/v1/users', userRouter);
 
 const port = 6969;
 app.listen(port, () => {

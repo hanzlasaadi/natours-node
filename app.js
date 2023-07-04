@@ -13,7 +13,8 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use(express.json()); //MIDDLEWARE: stores data between request & response - get access of request body on the request object
+//MIDDLEWARE: data between request & response - get access of request body on the request object
+app.use(express.json());
 
 app.use((req, res, next) => {
   console.log('HELLOO......from the middleware');
@@ -21,6 +22,8 @@ app.use((req, res, next) => {
 });
 
 app.use(morgan('dev'));
+
+app.use(express.static(`${__dirname}/public`));
 
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);

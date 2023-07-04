@@ -16,6 +16,23 @@ exports.checkId = (req, res, next, val) => {
   next();
 };
 
+//CheckBody Middleware
+exports.checkBody = (req, res, next) => {
+  console.log('Checkbody middleware is working');
+  if (!req.body)
+    return res.status(400).send({
+      status: 'fail',
+      message: 'Request not found',
+    });
+  if (!req.body.name || !req.body.price) {
+    return res.status(400).send({
+      status: 'fail',
+      message: 'Request does not contain required properties',
+    });
+  }
+  next();
+};
+
 //------ROUTE HANDLERS/CONTROLLERS------
 exports.getAllTours = (req, res) => {
   // console.log(req.url);
@@ -51,7 +68,7 @@ exports.addNewTour = (req, res) => {
   tours.push(newTour); //add newly requested tour to main Tour Object
 
   fs.writeFile(
-    `${__dirname}/dev-data/data/tours-simple.json`,
+    `./../dev-data/data/tours-simple.json`,
     JSON.stringify(tours),
     (err) => {
       res.status(201).json({

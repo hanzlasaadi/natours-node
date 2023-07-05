@@ -1,10 +1,10 @@
-const tourController = require('./../controllers/tourController');
 const express = require('express');
+const tourController = require('./../controllers/tourController');
 
 const router = express.Router();
 
-//PARAM Middleware
-router.param('id', tourController.checkId);
+//PARAM Middleware (Don't need anymore bcz of DB validation and its own id)
+// router.param('id', tourController.checkId);
 
 router
   .route('/')

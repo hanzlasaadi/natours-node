@@ -18,6 +18,15 @@ exports.checkBody = (req, res, next) => {
   next();
 };
 
+// --------Alias Top 5 Cheapest Tours-------
+exports.aliasTopFive = function(req, res, next) {
+  req.query.limit = '5';
+  req.query.sort = '-ratingsAvg,price';
+  req.query.fields = 'name,ratingsAvg,duration,difficulty,summary,price';
+
+  next();
+};
+
 //------ROUTE HANDLERS/CONTROLLERS------
 exports.getAllTours = async function(req, res) {
   try {

@@ -1,4 +1,5 @@
 const Tour = require('./../models/tourModel');
+const APIFeatures = require('./../utils/apiFeatures');
 
 //CheckBody Middleware
 // eslint-disable-next-line consistent-return
@@ -30,57 +31,18 @@ exports.aliasTopFive = function(req, res, next) {
 //------ROUTE HANDLERS/CONTROLLERS------
 exports.getAllTours = async function(req, res) {
   try {
-    console.log(req.query);
+    // Making "API Features" Instance
+    const features = new APIFeatures(Tour.find(), req.query);
 
-    //Query method #1
-    // const tours = await Tour.find(req.query);
-
-    //Query method #2
-    // const tours = await Tour.find().where('difficulty').equals('easy').where('duration').equals('5');
-
-    // 1A) Making the query[only filtering allowed queries];
-    const excludedQueries = ['page', 'sort', 'fields', 'limit'];
-    const queryObj = { ...req.query };
-    excludedQueries.forEach(el => delete queryObj[el]);
-
-    // 1B) Advanced query filtering
-    // const query = Tour.find({ difficulty: 'easy', duration: { $gte: '5' } }); [OLD]
-    let advQuery = JSON.stringify(queryObj);
-    advQuery = advQuery.replace(/\b(gt|gte|lt|lte)\b/g, match => `$${match}`);
-    // console.log(JSON.parse(advQuery));
-
-    let query = Tour.find(JSON.parse(advQuery)); //.find() returns a queryobj to give to DB
-
-    // 2) Sorting
-    if (req.query.sort) {
-      const manyQueries = req.query.sort.split(',').join(' ');
-      query = query.sort(manyQueries);
-    } else {
-      query = query.sort('-createdAt');
-    }
-
-    // 3) Limiting Fields in the Results
-    if (req.query.fields) {
-      const fields = req.query.fields.split(',').join(' ');
-      query = query.select(fields);
-    } else {
-      query = query.select('-__v');
-    }
-
-    // 4) Pagination
-    const page = +req.query.page || 1;
-    const limit = +req.query.limit || 5;
-    const skip = (page - 1) * limit;
-
-    query = query.skip(skip).limit(limit);
-
-    if (req.query.page) {
-      const numTours = await Tour.countDocuments();
-      if (skip >= numTours) throw new Error('This many tours do not exist');
-    }
+    // Running all class methods;
+    features
+      .filter()
+      .limitFields()
+      .sort()
+      .paginate();
 
     // Executing Query;
-    const tours = await query;
+    const tours = await features.query;
 
     res.send({
       status: 'success',

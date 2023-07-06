@@ -99,6 +99,13 @@ tourSchema.post('find', function(query, next) {
   next();
 });
 
+// Mongoose Middleware - Aggregation
+tourSchema.pre('aggregate', function(next) {
+  this.pipeline().unshift({ $match: { secretTour: { $ne: true } } });
+  console.log(this.pipeline());
+  next();
+});
+
 //Making a model from mongoose schema
 const Tour = mongoose.model('Tour', tourSchema);
 

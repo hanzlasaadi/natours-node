@@ -10,6 +10,8 @@ const tourSchema = mongoose.Schema(
       required: [true, 'A tour must have a name e.g., Hunza Valley'],
       trim: true
     },
+    slug: String,
+    secretTour: Boolean,
     duration: {
       type: Number,
       required: [true, 'A tour must have a duration! (a number)']
@@ -67,6 +69,34 @@ const tourSchema = mongoose.Schema(
 // Virtual Properties
 tourSchema.virtual('durationinWeeks').get(function() {
   return (this.duration / 7).toPrecision(3);
+});
+
+// Mongoose Middleware - Document Middleware
+//PRE-SAVE HOOK
+// tourSchema.pre('save', function(next) {
+//   this.slug = this.name
+//     .toLowerCase()
+//     .split(' ')
+//     .join('-');
+//   console.log(this.slug);
+//   next();
+// });
+
+//POST-SAVE HOOK
+// tourSchema.post('save', function(doc, next) {
+//   console.log(doc.slug);
+//   next();
+// });
+
+// Mongoose Middleware - Query
+tourSchema.pre(/^find/, function(next) {
+  this.find({ secretTour: { $ne: true } });
+  next();
+});
+
+tourSchema.post('find', function(query, next) {
+  // console.log(query);
+  next();
 });
 
 //Making a model from mongoose schema

@@ -152,7 +152,16 @@ exports.getTourStats = async (req, res) => {
         }
       },
       {
+        $addFields: {
+          roundedAvgPrice: { $round: ['$avgPrice', 1] },
+          totalRatingsAverageRound: { $round: ['$totalRatingsAverage', 1] }
+        }
+      },
+      {
         $sort: { avgPrice: 1 }
+      },
+      {
+        $project: { avgPrice: 0, totalRatingsAverage: 0 }
       }
       // {
       //   $match: { $difficulty: { $ne: 'easy' } }
@@ -164,8 +173,63 @@ exports.getTourStats = async (req, res) => {
 
     res.status(200).json({
       status: 'success',
+      results: stats.length,
       data: {
         stats
+      }
+    });
+  } catch (err) {
+    res.status(400).json({
+      status: 'fail',
+      message: err.message
+    });
+  }
+};
+
+exports.getMonthlyPlan = async (req, res) => {
+  try {
+    const { year, limit } = req.params;
+
+    const monthlyData = await Tour.aggregate([
+      {
+        $unwind: '$startDates'
+      },
+      {
+        $match: {
+          startDates: {
+            $gte: new Date(`${year}-01-01`),
+            $lte: new Date(`${year}-12-31`)
+          }
+        }
+      },
+      {
+        $group: {
+          _id: { $month: '$startDates' },
+          numTours: { $sum: 1 },
+          tours: { $push: '$name' }
+        }
+      },
+      {
+        $addFields: {
+          monthNumber: '$_id'
+        }
+      },
+      {
+        $project: { _id: 0 }
+      },
+      {
+        $sort: { numTours: -1 }
+      },
+      {
+        $limit: +limit || 12
+      }
+    ]);
+
+    res.status(200).json({
+      status: 'success',
+      results: monthlyData.length,
+      data: {
+        monthlyData
       }
     });
   } catch (err) {

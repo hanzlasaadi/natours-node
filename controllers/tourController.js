@@ -21,7 +21,7 @@ exports.checkBody = (req, res, next) => {
 //------ROUTE HANDLERS/CONTROLLERS------
 exports.getAllTours = async function(req, res) {
   try {
-    const excludedQueries = ['page', 'sort', 'fields', 'limit'];
+    console.log(req.query);
 
     //Query method #1
     // const tours = await Tour.find(req.query);
@@ -29,12 +29,18 @@ exports.getAllTours = async function(req, res) {
     //Query method #2
     // const tours = await Tour.find().where('difficulty').equals('easy').where('duration').equals('5');
 
-    //Making the query;
+    //Making the query[only filtering allowed queries];
+    const excludedQueries = ['page', 'sort', 'fields', 'limit'];
     const queryObj = { ...req.query };
-
     excludedQueries.forEach(el => delete queryObj[el]);
 
-    const query = Tour.find(queryObj); //Model.find() returns a query to give to DB
+    // Advanced query filtering
+    // const query = Tour.find({ difficulty: 'easy', duration: { $gte: '5' } }); [OLD]
+    let advQuery = JSON.stringify(queryObj);
+    advQuery = advQuery.replace(/\b(gt|gte|lt|lte)\b/g, match => `$${match}`);
+    console.log(JSON.parse(advQuery));
+
+    const query = Tour.find(JSON.parse(advQuery)); //.find() returns a queryobj to give to DB
 
     // Executing Query;
     const tours = await query;

@@ -21,7 +21,24 @@ exports.checkBody = (req, res, next) => {
 //------ROUTE HANDLERS/CONTROLLERS------
 exports.getAllTours = async function(req, res) {
   try {
-    const tours = await Tour.find();
+    const excludedQueries = ['page', 'sort', 'fields', 'limit'];
+
+    //Query method #1
+    // const tours = await Tour.find(req.query);
+
+    //Query method #2
+    // const tours = await Tour.find().where('difficulty').equals('easy').where('duration').equals('5');
+
+    //Making the query;
+    const queryObj = { ...req.query };
+
+    excludedQueries.forEach(el => delete queryObj[el]);
+
+    const query = Tour.find(queryObj); //Model.find() returns a query to give to DB
+
+    // Executing Query;
+    const tours = await query;
+
     res.send({
       status: 'success',
       results: tours.length,

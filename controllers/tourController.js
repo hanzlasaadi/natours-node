@@ -29,18 +29,26 @@ exports.getAllTours = async function(req, res) {
     //Query method #2
     // const tours = await Tour.find().where('difficulty').equals('easy').where('duration').equals('5');
 
-    //Making the query[only filtering allowed queries];
+    // 1A) Making the query[only filtering allowed queries];
     const excludedQueries = ['page', 'sort', 'fields', 'limit'];
     const queryObj = { ...req.query };
     excludedQueries.forEach(el => delete queryObj[el]);
 
-    // Advanced query filtering
+    // 1B) Advanced query filtering
     // const query = Tour.find({ difficulty: 'easy', duration: { $gte: '5' } }); [OLD]
     let advQuery = JSON.stringify(queryObj);
     advQuery = advQuery.replace(/\b(gt|gte|lt|lte)\b/g, match => `$${match}`);
-    console.log(JSON.parse(advQuery));
+    // console.log(JSON.parse(advQuery));
 
-    const query = Tour.find(JSON.parse(advQuery)); //.find() returns a queryobj to give to DB
+    let query = Tour.find(JSON.parse(advQuery)); //.find() returns a queryobj to give to DB
+
+    // 2) Sorting
+    if (req.query.sort) {
+      const manyQueries = req.query.sort.split(',').join(' ');
+      query = query.sort(manyQueries);
+    } else {
+      query = query.sort('-createdAt');
+    }
 
     // Executing Query;
     const tours = await query;

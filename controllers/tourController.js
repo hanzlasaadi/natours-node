@@ -1,3 +1,5 @@
+const AppError = require('../utils/appError');
+const catchAsync = require('../utils/catchAsync');
 const Tour = require('./../models/tourModel');
 const APIFeatures = require('./../utils/apiFeatures');
 
@@ -28,12 +30,6 @@ exports.aliasTopFive = function(req, res, next) {
   next();
 };
 
-const catchAsync = fn => {
-  return (req, res, next) => {
-    fn(req, res, next).catch(err => next(err));
-  };
-};
-
 //------ROUTE HANDLERS/CONTROLLERS------
 exports.getAllTours = catchAsync(async function(req, res, next) {
   // Making "API Features" Instance
@@ -60,7 +56,12 @@ exports.getAllTours = catchAsync(async function(req, res, next) {
 
 exports.getATour = catchAsync(async function(req, res, next) {
   const tour = await Tour.findById(req.params.id);
-  res.send({
+
+  if (!tour) {
+    return next(new AppError(404, 'No tour could be found with this ID!!!'));
+  }
+
+  return res.send({
     status: 'success',
     data: {
       tours: tour
@@ -95,7 +96,11 @@ exports.updateTour = catchAsync(async (req, res, next) => {
 });
 
 exports.deleteTour = catchAsync(async (req, res, next) => {
-  await Tour.findByIdAndDelete(req.params.id);
+  const tour = await Tour.findByIdAndDelete(req.params.id);
+
+  if (!tour) {
+    next(new AppError(404, 'The tour could not be found!!!'));
+  }
 
   res.status(204).json({
     status: 'success',

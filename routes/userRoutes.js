@@ -1,10 +1,13 @@
-const userController = require('./../controllers/userController');
 const express = require('express');
+const userController = require('./../controllers/userController');
+const authController = require('./../controllers/authController');
 
 const router = express.Router();
 
 //PARAM Middleware
 router.param('id', userController.checkId);
+
+router.route('/signup').post(authController.signup);
 
 router
   .route('/')

@@ -3,6 +3,9 @@ const morgan = require('morgan');
 const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
 
+const AppError = require('./utils/appError');
+const errorController = require('./controllers/errController');
+
 const app = express();
 
 //-----MIDDLEWAREs-----
@@ -29,26 +32,14 @@ app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
 
 app.all('*', (req, res, next) => {
-  // res.status(404).json({
-  //   status: 'fail',
-  //   message: `Could not get info on this ${req.originalUrl} URL.`
-  // });
+  // const err = new Error(`Can't find asset on ${req.originalUrl}!!!`);
+  // err.statusCode = 404;
+  // err.status = 'fail';
 
-  const err = new Error(`Can't find asset on ${req.originalUrl}!!!`);
-  err.statusCode = 404;
-  err.status = 'fail';
-
-  next(err); //Will skip any middleware and go straight to ERROR middleware
+  //Will skip any middleware and go straight to ERROR middleware:;
+  next(new AppError(404, `Can't find asset on ${req.originalUrl}!!!`));
 });
 
-app.use((err, req, res, next) => {
-  err.statusCode = err.statusCode || 500;
-  err.status = err.status || 'error';
-
-  res.status(err.statusCode).json({
-    status: err.status,
-    message: err.message
-  });
-});
+app.use(errorController);
 
 module.exports = app;

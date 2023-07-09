@@ -1,4 +1,5 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
+const { promisify } = require('util');
 const jwt = require('jsonwebtoken');
 const User = require('../models/userModel');
 const catchAsync = require('../utils/catchAsync');
@@ -50,4 +51,35 @@ exports.login = catchAsync(async function(req, res, next) {
     status: 'success',
     token
   });
+});
+
+exports.verify = catchAsync(async function(req, res, next) {
+  let token;
+  // 1. Getting token and checking if its there
+  if (
+    req.headers.authorization &&
+    req.headers.authorization.startsWith('Bearer')
+  ) {
+    token = req.headers.authorization.split(' ')[1];
+  }
+
+  if (!token) return next(new AppError(401, 'Please Login!!!'));
+
+  // 2. Verification of the token
+  const decodedData = await promisify(jwt.verify)(
+    token,
+    process.env.SECRET_JWT
+  );
+
+  // 3. Checking if user still exists
+  const freshUser = await User.findById(decodedData.id);
+  // console.log(freshUser);
+
+  // 4. Check if user changed password after the token was issued.
+  if (freshUser.checkChangedPassword(decodedData.iat))
+    return next(new AppError('User changed password recently, Login again!!!'));
+
+  // Every Test is passed and user is verified
+  req.body = freshUser;
+  return next();
 });

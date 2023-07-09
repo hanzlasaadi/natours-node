@@ -2,7 +2,7 @@
 const bcrypt = require('bcryptjs');
 const validation = require('validator');
 const mongoose = require('mongoose');
-const catchAsync = require('../utils/catchAsync');
+// const catchAsync = require('../utils/catchAsync');
 
 const userSchema = mongoose.Schema({
   name: {
@@ -35,6 +35,10 @@ const userSchema = mongoose.Schema({
       },
       message: 'Password must match! Try Again!!!'
     }
+  },
+  passwordChangeTimestamp: {
+    type: Date,
+    default: new Date('2022-07-09')
   }
 });
 
@@ -44,7 +48,7 @@ userSchema.pre('save', async function(next) {
   this.password = await bcrypt.hash(this.password, 12);
   this.passwordConfirm = undefined;
 
-  next();
+  return next();
 });
 
 userSchema.methods.correctPassword = async function(
@@ -52,6 +56,21 @@ userSchema.methods.correctPassword = async function(
   userPassword
 ) {
   return await bcrypt.compare(candidatePassword, userPassword);
+};
+
+userSchema.methods.checkChangedPassword = function(jwtTime) {
+  if (this.passwordChangeTimestamp) {
+    const changeTime = parseInt(
+      this.passwordChangeTimestamp.getTime() / 1000,
+      10
+    );
+
+    // True (password was changed recently - deny access)
+    return jwtTime < changeTime;
+  }
+
+  // False (password timestamp not present - allow access)
+  return false;
 };
 
 const User = mongoose.model('User', userSchema);

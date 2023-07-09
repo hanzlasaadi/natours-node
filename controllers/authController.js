@@ -80,6 +80,17 @@ exports.verify = catchAsync(async function(req, res, next) {
     return next(new AppError('User changed password recently, Login again!!!'));
 
   // Every Test is passed and user is verified
-  req.body = freshUser;
+  req.user = freshUser;
   return next();
 });
+
+exports.checkAdmin = (...roles) => {
+  return (req, res, next) => {
+    if (!roles.includes(req.user.role))
+      return next(
+        new AppError(403, 'You are NOT authorized to perform this acton')
+      );
+
+    return next();
+  };
+};

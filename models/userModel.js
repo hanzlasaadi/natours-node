@@ -39,6 +39,10 @@ const userSchema = mongoose.Schema({
   passwordChangeTimestamp: {
     type: Date,
     default: new Date('2022-07-09')
+  },
+  role: {
+    type: String,
+    default: 'user'
   }
 });
 

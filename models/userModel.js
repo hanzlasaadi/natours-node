@@ -1,5 +1,6 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 const bcrypt = require('bcryptjs');
+const crypto = require('crypto');
 const validation = require('validator');
 const mongoose = require('mongoose');
 // const catchAsync = require('../utils/catchAsync');
@@ -36,6 +37,9 @@ const userSchema = mongoose.Schema({
       message: 'Password must match! Try Again!!!'
     }
   },
+  passwordResetToken: String,
+  passwordChangedAt: Date,
+  passwordTokenExpires: Date,
   passwordChangeTimestamp: {
     type: Date,
     default: new Date('2022-07-09')
@@ -75,6 +79,21 @@ userSchema.methods.checkChangedPassword = function(jwtTime) {
 
   // False (password timestamp not present - allow access)
   return false;
+};
+
+userSchema.methods.generatePasswordResetToken = function() {
+  const resetToken = crypto.randomBytes(32).toString('hex');
+
+  const hashToken = crypto
+    .createHash('sha256')
+    .update(resetToken)
+    .digest('hex');
+
+  this.passwordResetTokenHash = hashToken;
+
+  this.passwordTokenExpires = Date.now() + 10 * 1000 * 60;
+
+  return resetToken;
 };
 
 const User = mongoose.model('User', userSchema);

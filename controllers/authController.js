@@ -94,3 +94,15 @@ exports.checkAdmin = (...roles) => {
     return next();
   };
 };
+
+exports.forgotPassword = async function(req, res, next) {
+  if (!req.body.email) return next(new AppError(404, 'Enter an email!'));
+
+  const newUser = await User.findOne({ email: req.body.email });
+  if (!newUser) return next(new AppError(404, 'Email not correct'));
+
+  const resetToken = newUser.generatePasswordResetToken();
+  newUser.save({ validateBeforeSave: false });
+};
+
+exports.resetPassword = async function(req, res, next) {};

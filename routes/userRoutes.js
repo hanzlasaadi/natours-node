@@ -5,13 +5,15 @@ const authController = require('./../controllers/authController');
 const router = express.Router();
 
 //PARAM Middleware
-router.param('id', userController.checkId);
+// router.param('id', userController.checkId);
 
 router.route('/signup').post(authController.signup);
 router.route('/login').post(authController.login);
 
 router.route('/forgotPassword').post(authController.forgotPassword);
 router.route('/resetPassword/:token').patch(authController.resetPassword);
+
+router.route('/updateMe').patch(authController.verify, userController.updateMe);
 
 router
   .route('/updatePassword')

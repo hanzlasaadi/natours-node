@@ -174,3 +174,36 @@ exports.resetPassword = catchAsync(async function(req, res, next) {
     }
   });
 });
+
+exports.updatePassword = catchAsync(async function(req, res, next) {
+  // 1. Get user from database based on id
+  // console.log(req.user);
+  const crrUser = await User.findOne({ email: req.user.email }).select(
+    '+password'
+  );
+  // console.log(crrUser);
+  if (!crrUser)
+    return next(new AppError(403, 'Not authorized to update pass!'));
+
+  // 2. Check if POSTed crr password is correct
+  if (
+    !(await crrUser.correctPassword(req.body.currentPassword, crrUser.password))
+  ) {
+    return next(new AppError(403, 'Enter the correct current password!'));
+  }
+  // 3. If so, update password
+  crrUser.password = req.body.newPassword;
+  crrUser.passwordConfirm = req.body.confirmNewPassword;
+  await crrUser.save();
+
+  // 4. Log user in, send JWT
+  const token = signToken(crrUser._id);
+
+  return res.status(201).json({
+    status: 'success',
+    token,
+    data: {
+      user: crrUser
+    }
+  });
+});

@@ -38,11 +38,10 @@ const userSchema = mongoose.Schema({
     }
   },
   passwordResetTokenHash: String,
-  passwordChangedAt: Date,
   passwordTokenExpires: Date,
   passwordChangeTimestamp: {
     type: Date,
-    default: new Date('2022-07-09')
+    default: Date.now()
   },
   role: {
     type: String,
@@ -57,6 +56,15 @@ userSchema.pre('save', async function(next) {
   this.passwordConfirm = undefined;
 
   return next();
+});
+
+// eslint-disable-next-line consistent-return
+userSchema.pre('save', function(next) {
+  if (!this.isModified('password') || this.isNew) return next();
+
+  this.passwordChangeTimestamp = Date.now() - 2000; // this DATE must be less than the token issued DATE
+
+  next();
 });
 
 userSchema.methods.correctPassword = async function(

@@ -1,5 +1,6 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 const { promisify } = require('util');
+const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
 const User = require('../models/userModel');
 const catchAsync = require('../utils/catchAsync');
@@ -96,7 +97,7 @@ exports.checkAdmin = (...roles) => {
   };
 };
 
-exports.forgotPassword = async function(req, res, next) {
+exports.forgotPassword = catchAsync(async function(req, res, next) {
   // Check if user entered an email
   if (!req.body.email) return next(new AppError(404, 'Enter an email!'));
 
@@ -138,6 +139,38 @@ exports.forgotPassword = async function(req, res, next) {
       )
     );
   }
-};
+});
 
-exports.resetPassword = async function(req, res, next) {};
+exports.resetPassword = catchAsync(async function(req, res, next) {
+  // Encrypt token
+  const reqToken = crypto
+    .createHash('sha256')
+    .update(req.params.token)
+    .digest('hex');
+
+  // Get user based on the token & verify token expiration
+  const newUser = await User.findOne({
+    passwordResetTokenHash: reqToken,
+    passwordTokenExpires: { $gt: Date.now() }
+  });
+  if (!newUser) return next(new AppError(403, 'Token is invalid or expired!'));
+
+  newUser.password = req.body.password;
+  newUser.passwordConfirm = req.body.passwordConfirm;
+  newUser.passwordResetTokenHash = undefined;
+  newUser.passwordTokenExpires = undefined;
+  await newUser.save();
+  // update passwordChangedAt, password properties
+  // Done at userModel "pre hook"
+
+  // Send JWT & log user in
+  const token = signToken(newUser._id);
+
+  return res.status(201).json({
+    status: 'success',
+    token,
+    data: {
+      user: newUser
+    }
+  });
+});

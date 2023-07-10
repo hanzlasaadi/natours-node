@@ -37,7 +37,7 @@ const userSchema = mongoose.Schema({
       message: 'Password must match! Try Again!!!'
     }
   },
-  passwordResetToken: String,
+  passwordResetTokenHash: String,
   passwordChangedAt: Date,
   passwordTokenExpires: Date,
   passwordChangeTimestamp: {

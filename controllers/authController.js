@@ -13,6 +13,25 @@ const signToken = id => {
   });
 };
 
+const tokenAndSendResponse = (user, statusCode, res) => {
+  const token = signToken(user._id);
+  const cookieOpts = {
+    expires: new Date(
+      Date.now() + process.env.JWT_COOKIE_EXPIRATION * 24 * 60 * 60 * 1000
+    ),
+    httpOnly: true
+  };
+  if (process.env.NODE_ENV === 'production') cookieOpts.secure = true;
+
+  res.cookie('jwt', token, cookieOpts);
+
+  res.status(statusCode).json({
+    status: 'success',
+    token,
+    data: user
+  });
+};
+
 exports.signup = catchAsync(async (req, res, next) => {
   const newUser = await User.create({
     name: req.body.name,
@@ -21,15 +40,7 @@ exports.signup = catchAsync(async (req, res, next) => {
     passwordConfirm: req.body.passwordConfirm
   });
 
-  const token = signToken(newUser._id);
-
-  res.status(201).json({
-    status: 'success',
-    token,
-    data: {
-      user: newUser
-    }
-  });
+  tokenAndSendResponse(newUser, 201, res);
 });
 
 exports.login = catchAsync(async function(req, res, next) {
@@ -46,13 +57,8 @@ exports.login = catchAsync(async function(req, res, next) {
   }
 
   // 3. Generate token if true
-  const token = signToken(user._id);
-
   // 4. Send response
-  return res.status(200).json({
-    status: 'success',
-    token
-  });
+  return tokenAndSendResponse(user, 200, res);
 });
 
 exports.verify = catchAsync(async function(req, res, next) {
@@ -164,15 +170,7 @@ exports.resetPassword = catchAsync(async function(req, res, next) {
   // Done at userModel "pre hook"
 
   // Send JWT & log user in
-  const token = signToken(newUser._id);
-
-  return res.status(201).json({
-    status: 'success',
-    token,
-    data: {
-      user: newUser
-    }
-  });
+  return tokenAndSendResponse(newUser, 201, res);
 });
 
 exports.updatePassword = catchAsync(async function(req, res, next) {
@@ -197,13 +195,5 @@ exports.updatePassword = catchAsync(async function(req, res, next) {
   await crrUser.save();
 
   // 4. Log user in, send JWT
-  const token = signToken(crrUser._id);
-
-  return res.status(201).json({
-    status: 'success',
-    token,
-    data: {
-      user: crrUser
-    }
-  });
+  return tokenAndSendResponse(crrUser, 201, res);
 });

@@ -22,6 +22,15 @@ const filterObject = (obj, ...fields) => {
   return newObj;
 };
 
+exports.deleteMe = catchAsync(async function(req, res, next) {
+  await User.findByIdAndUpdate(req.user._id, { active: false });
+  // console.log(req.user._id);
+  res.status(204).json({
+    status: 'success',
+    data: null
+  });
+});
+
 exports.updateMe = catchAsync(async (req, res, next) => {
   // 1. Deny access if user enters password or confirm password
   if (req.body.password || req.body.confirmPassword) {

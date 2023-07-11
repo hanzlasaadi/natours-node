@@ -46,6 +46,10 @@ const userSchema = mongoose.Schema({
   role: {
     type: String,
     default: 'user'
+  },
+  active: {
+    type: Boolean,
+    default: true
   }
 });
 
@@ -64,6 +68,11 @@ userSchema.pre('save', function(next) {
 
   this.passwordChangeTimestamp = Date.now() - 2000; // this DATE must be less than the token issued DATE
 
+  next();
+});
+
+userSchema.pre(/^find/, function(next) {
+  this.find({ active: { $ne: false } });
   next();
 });
 

@@ -1,5 +1,6 @@
 const express = require('express');
 const morgan = require('morgan');
+const rateLimit = require('express-rate-limit');
 const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
 
@@ -8,7 +9,17 @@ const errorController = require('./controllers/errController');
 
 const app = express();
 
-//-----MIDDLEWAREs-----
+//-----GLOBAL MIDDLEWAREs-----
+if (process.env.NODE_ENV === 'development') app.use(morgan('dev'));
+
+// Rate limiting middleware
+const limiter = rateLimit({
+  max: 100,
+  windowMs: 60 * 60 * 1000,
+  message: 'Too many requests from this IP. Try again after an hour!'
+});
+app.use('/api', limiter);
+
 //This will only work if before route handler because ORDER matters in Express.js
 app.use((req, res, next) => {
   req.requestedTime = new Date().toISOString();
@@ -23,8 +34,6 @@ app.use((req, res, next) => {
   console.log('HELLOO......from the middleware');
   next();
 });
-
-if (process.env.NODE_ENV === 'development') app.use(morgan('dev'));
 
 app.use(express.static(`${__dirname}/public`));
 

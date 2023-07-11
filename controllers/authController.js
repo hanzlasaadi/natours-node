@@ -24,6 +24,7 @@ const tokenAndSendResponse = (user, statusCode, res) => {
   if (process.env.NODE_ENV === 'production') cookieOpts.secure = true;
 
   res.cookie('jwt', token, cookieOpts);
+  user.password = undefined;
 
   res.status(statusCode).json({
     status: 'success',

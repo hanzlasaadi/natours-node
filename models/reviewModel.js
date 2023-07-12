@@ -35,9 +35,17 @@ const reviewSchema = mongoose.Schema(
 );
 
 // Query Middleware .save() & .create()
-// reviewSchema.pre(/^find/, async function(next) {
-//   await this.populate('')
-// });
+reviewSchema.pre(/^find/, async function(next) {
+  await this.populate({
+    path: 'user',
+    select: 'name image',
+    model: 'User'
+  }).populate({
+    path: 'tour',
+    select: 'name',
+    model: 'Tour'
+  });
+});
 
 const Review = mongoose.model('Review', reviewSchema);
 

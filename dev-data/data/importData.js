@@ -11,7 +11,7 @@ dotenv.config({ path: `${__dirname}/../../config.env` });
 const arg = process.argv.find(el => el === '--import' || el === '--delete');
 console.log('Fuck yes: ', arg);
 
-const allData = JSON.parse(fs.readFileSync(`${__dirname}/tours-simple.json`));
+const allData = JSON.parse(fs.readFileSync(`${__dirname}/tours.json`));
 
 const DB = process.env.DATABASE.replace('<PASSWORD>', process.env.DB_PASSWORD);
 

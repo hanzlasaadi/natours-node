@@ -1,5 +1,7 @@
 /* eslint-disable import/no-extraneous-dependencies */
 const mongoose = require('mongoose');
+const { default: slugify } = require('slugify');
+const User = require('./userModel');
 
 // Describing mongoose schema
 const tourSchema = mongoose.Schema(
@@ -94,7 +96,8 @@ const tourSchema = mongoose.Schema(
         description: String,
         day: Number
       }
-    ]
+    ],
+    guides: Array
   },
   {
     toJSON: { virtuals: true },
@@ -107,23 +110,27 @@ tourSchema.virtual('durationinWeeks').get(function() {
   return (this.duration / 7).toPrecision(3);
 });
 
-// Mongoose Middleware - Document Middleware
+// Mongoose Middleware - Document Middleware - runs before .save() & .create()
 //PRE-SAVE HOOK
-// tourSchema.pre('save', function(next) {
-//   this.slug = this.name
-//     .toLowerCase()
-//     .split(' ')
-//     .join('-');
-//   console.log(this.slug);
-//   next();
-// });
+tourSchema.pre('save', function(next) {
+  // this.slug = this.name.toLowerCase().split(' ').join('-');
+  this.slug = slugify(this.name);
+  console.log(this.slug);
+  next();
+});
+
+// Query PRE HOOK - to query user documents in the guides array
+tourSchema.pre('save', async function(next) {
+  const userPromises = this.guides.map(async id => await User.findById(id));
+  this.guides = await Promise.all(userPromises);
+  next();
+});
 
 //POST-SAVE HOOK
 // tourSchema.post('save', function(doc, next) {
 //   console.log(doc.slug);
 //   next();
 // });
-
 // Mongoose Middleware - Query
 tourSchema.pre(/^find/, function(next) {
   this.find({ secretTour: { $ne: true } });

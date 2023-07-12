@@ -98,7 +98,7 @@ const tourSchema = mongoose.Schema(
     ],
     guides: [
       {
-        type: mongoose.Types.ObjectId
+        type: mongoose.Schema.ObjectId
       }
     ]
   },

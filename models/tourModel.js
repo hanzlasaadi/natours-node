@@ -113,6 +113,13 @@ tourSchema.virtual('durationinWeeks').get(function() {
   return (this.duration / 7).toPrecision(3);
 });
 
+// Adding virtual property: 'reviews' to tourSchema
+tourSchema.virtual('reviews', {
+  ref: 'Review',
+  foreignField: 'tour',
+  localField: '_id'
+});
+
 // Mongoose Middleware - Document Middleware - runs before .save() & .create()
 //PRE-SAVE HOOK
 tourSchema.pre('save', function(next) {

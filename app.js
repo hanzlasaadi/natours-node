@@ -10,7 +10,7 @@ const hpp = require('hpp');
 
 const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
-const reviewRouter = require('./routes/tourRoutes');
+const reviewRouter = require('./routes/reviewRoutes');
 
 const AppError = require('./utils/appError');
 const errorController = require('./controllers/errController');

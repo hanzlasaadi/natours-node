@@ -1,12 +1,15 @@
 const express = require('express');
 const tourController = require('./../controllers/tourController');
 const authController = require('./../controllers/authController');
-const reviewController = require('./../controllers/reviewController');
+const reviewRouter = require('./reviewRoutes');
 
 const router = express.Router();
 
 //PARAM Middleware (Don't need anymore bcz of DB validation and its own id)
 // router.param('id', tourController.checkId);
+
+// mounted review router to tour router whenever '/:tourId/reviews' is requested
+router.use('/:tourId/reviews', reviewRouter);
 
 router
   .route('/top-5-cheap')
@@ -26,13 +29,5 @@ router
   .get(tourController.getATour)
   .patch(tourController.updateTour)
   .delete(tourController.deleteTour);
-
-router
-  .route('/:tourId/reviews')
-  .post(
-    authController.verify,
-    authController.checkAdmin('user'),
-    reviewController.addNewReview
-  );
 
 module.exports = router;

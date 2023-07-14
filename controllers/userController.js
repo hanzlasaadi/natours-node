@@ -1,6 +1,7 @@
 const User = require('../models/userModel');
 const AppError = require('../utils/appError');
 const catchAsync = require('../utils/catchAsync');
+const { deleteOne } = require('./factoryHandlers');
 
 //PARAM Middleware
 // exports.checkId = (req, res, next, val) => {
@@ -80,9 +81,4 @@ exports.updateUser = (req, res) => {
     message: 'No Data Found'
   });
 };
-exports.deleteUser = (req, res) => {
-  res.status(500).json({
-    status: 'Server Down',
-    message: 'No Data Found'
-  });
-};
+exports.deleteUser = deleteOne(User);

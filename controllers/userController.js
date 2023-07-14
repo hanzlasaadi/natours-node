@@ -1,7 +1,7 @@
 const User = require('../models/userModel');
 const AppError = require('../utils/appError');
 const catchAsync = require('../utils/catchAsync');
-const { deleteOne } = require('./factoryHandlers');
+const factory = require('./factoryHandlers');
 
 //PARAM Middleware
 // exports.checkId = (req, res, next, val) => {
@@ -63,22 +63,20 @@ exports.getAllUsers = catchAsync(async (req, res) => {
   });
 });
 
-exports.addNewUser = (req, res) => {
-  res.status(500).json({
-    status: 'Server Down',
-    message: 'No Data Found'
-  });
-};
 exports.getOneUser = (req, res) => {
   res.status(500).json({
     status: 'Server Down',
     message: 'No Data Found'
   });
 };
+
+exports.addNewUser = factory.createOne(User);
+
+exports.deleteUser = factory.deleteOne(User);
+
 exports.updateUser = (req, res) => {
   res.status(500).json({
     status: 'Server Down',
-    message: 'No Data Found'
+    message: 'This route is not defined. Please use signup instead!!!'
   });
 };
-exports.deleteUser = deleteOne(User);

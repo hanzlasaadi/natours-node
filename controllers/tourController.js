@@ -2,7 +2,7 @@ const AppError = require('../utils/appError');
 const catchAsync = require('../utils/catchAsync');
 const Tour = require('./../models/tourModel');
 const APIFeatures = require('./../utils/apiFeatures');
-const { deleteOne } = require('./factoryHandlers');
+const factory = require('./factoryHandlers');
 
 //CheckBody Middleware
 // eslint-disable-next-line consistent-return
@@ -70,33 +70,11 @@ exports.getATour = catchAsync(async function(req, res, next) {
   });
 });
 
-exports.addNewTour = catchAsync(async (req, res, next) => {
-  // const newTour = new Tour();
-  const newTour = await Tour.create(req.body);
+exports.addNewTour = factory.createOne(Tour);
 
-  res.status(201).json({
-    status: 'success',
-    data: {
-      tour: newTour
-    }
-  });
-});
+exports.updateTour = factory.updateOne(Tour);
 
-exports.updateTour = catchAsync(async (req, res, next) => {
-  const newTour = await Tour.findByIdAndUpdate(req.params.id, req.body, {
-    new: true,
-    runValidators: true
-  });
-
-  res.status(201).json({
-    status: 'success',
-    data: {
-      tour: newTour
-    }
-  });
-});
-
-exports.deleteTour = deleteOne(Tour);
+exports.deleteTour = factory.deleteOne(Tour);
 
 exports.getTourStats = catchAsync(async (req, res, next) => {
   const stats = await Tour.aggregate([

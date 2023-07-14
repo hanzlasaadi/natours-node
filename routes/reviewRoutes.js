@@ -9,6 +9,7 @@ router
   .post(
     authController.verify,
     authController.checkAdmin('user'),
+    reviewController.newReviewReqBody,
     reviewController.addNewReview
   )
   .get(reviewController.getAllReviews);

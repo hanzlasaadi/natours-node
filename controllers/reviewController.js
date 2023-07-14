@@ -1,7 +1,8 @@
+/* eslint-disable consistent-return */
 const Review = require('../models/reviewModel');
 const AppError = require('../utils/appError');
 const catchAsync = require('../utils/catchAsync');
-const { deleteOne } = require('./factoryHandlers');
+const factory = require('./factoryHandlers');
 
 exports.getAllReviews = catchAsync(async (req, res, next) => {
   const filter = {};
@@ -32,7 +33,7 @@ exports.getReview = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.addNewReview = catchAsync(async (req, res, next) => {
+exports.newReviewReqBody = (req, res, next) => {
   if (!req.body.user) req.body.user = req.user.id;
   if (!req.body.tour) req.body.tour = req.params.tourId;
 
@@ -43,19 +44,15 @@ exports.addNewReview = catchAsync(async (req, res, next) => {
     tour: req.body.tour,
     createdAt: req.body.createdAt
   };
-
   if (!reqReview)
-    return next(new AppError(401, 'Please enter data for reviews!!!'));
+    return next(new AppError(401, 'Please enter data for the review!!!'));
 
-  const review = await Review.create(reqReview);
+  req.body = reqReview;
+  next();
+};
 
-  if (!review)
-    return next(new AppError(401, 'Please provide a valid id for a Review!!!'));
+exports.addNewReview = factory.createOne(Review);
 
-  return res.status(201).json({
-    status: 'success',
-    review
-  });
-});
+exports.deleteReview = factory.deleteOne(Review);
 
-exports.deleteReview = deleteOne(Review);
+exports.updateReview = factory.updateOne(Review);

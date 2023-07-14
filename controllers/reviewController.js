@@ -29,6 +29,9 @@ exports.getReview = catchAsync(async (req, res, next) => {
 });
 
 exports.addNewReview = catchAsync(async (req, res, next) => {
+  if (!req.body.user) req.body.user = req.user.id;
+  if (!req.body.tour) req.body.tour = req.params.tourId;
+
   const reqReview = {
     review: req.body.review,
     rating: req.body.rating,

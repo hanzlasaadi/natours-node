@@ -51,24 +51,9 @@ exports.updateMe = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.getAllUsers = catchAsync(async (req, res) => {
-  const users = await User.find();
+exports.getAllUsers = factory.getAll(User);
 
-  res.send({
-    status: 'success',
-    results: users.length,
-    data: {
-      users: users
-    }
-  });
-});
-
-exports.getOneUser = (req, res) => {
-  res.status(500).json({
-    status: 'Server Down',
-    message: 'No Data Found'
-  });
-};
+exports.getOneUser = factory.getOne(User);
 
 exports.addNewUser = factory.createOne(User);
 

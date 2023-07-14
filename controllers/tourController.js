@@ -1,8 +1,8 @@
-const AppError = require('../utils/appError');
 const catchAsync = require('../utils/catchAsync');
 const Tour = require('./../models/tourModel');
-const APIFeatures = require('./../utils/apiFeatures');
 const factory = require('./factoryHandlers');
+// const APIFeatures = require('./../utils/apiFeatures');
+// const AppError = require('../utils/appError');
 
 //CheckBody Middleware
 // eslint-disable-next-line consistent-return
@@ -32,43 +32,9 @@ exports.aliasTopFive = function(req, res, next) {
 };
 
 //------ROUTE HANDLERS/CONTROLLERS------
-exports.getAllTours = catchAsync(async function(req, res, next) {
-  // Making "API Features" Instance
-  const features = new APIFeatures(Tour.find(), req.query);
+exports.getAllTours = factory.getAll;
 
-  // Running all class methods;
-  features
-    .filter()
-    .limitFields()
-    .sort()
-    .paginate();
-
-  // Executing Query;
-  const tours = await features.query;
-
-  res.send({
-    status: 'success',
-    results: tours.length,
-    data: {
-      tours: tours
-    }
-  });
-});
-
-exports.getATour = catchAsync(async function(req, res, next) {
-  const tour = await Tour.findById(req.params.id).populate('reviews');
-
-  if (!tour) {
-    return next(new AppError(404, 'No tour could be found with this ID!!!'));
-  }
-
-  return res.send({
-    status: 'success',
-    data: {
-      tours: tour
-    }
-  });
-});
+exports.getATour = factory.getOne(Tour, { path: 'reviews' });
 
 exports.addNewTour = factory.createOne(Tour);
 

@@ -1,37 +1,17 @@
 /* eslint-disable consistent-return */
 const Review = require('../models/reviewModel');
 const AppError = require('../utils/appError');
-const catchAsync = require('../utils/catchAsync');
 const factory = require('./factoryHandlers');
 
-exports.getAllReviews = catchAsync(async (req, res, next) => {
+exports.filterReviews = (req, res, next) => {
   const filter = {};
   if (req.params.tourId) filter.tour = req.params.tourId;
+  next();
+};
 
-  const reviews = await Review.find(filter);
+exports.getAllReviews = factory.getAll(Review);
 
-  return res.status(200).json({
-    status: 'success',
-    results: reviews.length,
-    reviews
-  });
-});
-
-exports.getReview = catchAsync(async (req, res, next) => {
-  const { id } = req.params;
-  if (!id)
-    return next(new AppError(404, 'Please enter an ID to find a review!!!'));
-
-  const review = await Review.findById(id);
-
-  if (!review)
-    return next(new AppError(404, 'No review found with this ID!!!'));
-
-  return res.status(200).json({
-    status: 'success',
-    review
-  });
-});
+exports.getReview = factory.getOne(Review);
 
 exports.newReviewReqBody = (req, res, next) => {
   if (!req.body.user) req.body.user = req.user.id;

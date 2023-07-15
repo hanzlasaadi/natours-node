@@ -17,17 +17,35 @@ router
 
 router.route('/tour-stats').get(tourController.getTourStats);
 
-router.route('/report/:year/:limit?').get(tourController.getMonthlyPlan);
+router
+  .route('/report/:year/:limit?')
+  .get(
+    authController.verify,
+    authController.checkAdmin('admin', 'lead-guide', 'guide'),
+    tourController.getMonthlyPlan
+  );
 
 router
   .route('/')
-  .get(authController.verify, tourController.getAllTours)
-  .post(tourController.checkBody, tourController.addNewTour);
+  .get(tourController.getAllTours)
+  .post(
+    authController.verify,
+    authController.checkAdmin('admin', 'lead-guide'),
+    tourController.addNewTour
+  );
 
 router
   .route('/:id')
   .get(tourController.getATour)
-  .patch(tourController.updateTour)
-  .delete(tourController.deleteTour);
+  .patch(
+    authController.verify,
+    authController.checkAdmin('admin', 'lead-guide'),
+    tourController.updateTour
+  )
+  .delete(
+    authController.verify,
+    authController.checkAdmin('admin', 'lead-guide'),
+    tourController.deleteTour
+  );
 
 module.exports = router;

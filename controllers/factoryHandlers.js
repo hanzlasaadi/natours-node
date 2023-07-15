@@ -3,7 +3,7 @@ const AppError = require('../utils/appError');
 const catchAsync = require('../utils/catchAsync');
 
 exports.getAll = Model => {
-  catchAsync(async function(req, res, next) {
+  return catchAsync(async function(req, res, next) {
     const filter = {};
     if (req.params.tourId) filter.tour = req.params.tourId; //hack for geting reviews for one Tour
 
@@ -31,7 +31,7 @@ exports.getAll = Model => {
 };
 
 exports.getOne = (Model, populateObj) => {
-  catchAsync(async function(req, res, next) {
+  return catchAsync(async function(req, res, next) {
     let query = Model.findById(req.params.id);
 
     // only if we need to populate (case of Tour Controller)
@@ -55,7 +55,7 @@ exports.getOne = (Model, populateObj) => {
 };
 
 exports.deleteOne = Model => {
-  catchAsync(async (req, res, next) => {
+  return catchAsync(async (req, res, next) => {
     const document = await Model.findByIdAndDelete(req.params.id);
 
     if (!document) {
@@ -72,7 +72,7 @@ exports.deleteOne = Model => {
 };
 
 exports.updateOne = Model => {
-  catchAsync(async (req, res, next) => {
+  return catchAsync(async (req, res, next) => {
     const newDocument = await Model.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
       runValidators: true
@@ -88,7 +88,7 @@ exports.updateOne = Model => {
 };
 
 exports.createOne = Model => {
-  catchAsync(async (req, res, next) => {
+  return catchAsync(async (req, res, next) => {
     const newTour = await Model.create(req.body);
 
     if (!newTour)

@@ -60,13 +60,13 @@ exports.getAllUsers = factory.getAll(User);
 
 exports.getOneUser = factory.getOne(User);
 
-exports.addNewUser = factory.createOne(User);
+exports.updateUser = factory.updateOne(User);
 
 exports.deleteUser = factory.deleteOne(User);
 
-exports.updateUser = (req, res) => {
+exports.addNewUser = (req, res) => {
   res.status(500).json({
-    status: 'Server Down',
+    status: 'Access Denied',
     message: 'This route is not defined. Please use signup instead!!!'
   });
 };

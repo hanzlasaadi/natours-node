@@ -32,7 +32,7 @@ exports.aliasTopFive = function(req, res, next) {
 };
 
 //------ROUTE HANDLERS/CONTROLLERS------
-exports.getAllTours = factory.getAll;
+exports.getAllTours = factory.getAll(Tour);
 
 exports.getATour = factory.getOne(Tour, { path: 'reviews' });
 

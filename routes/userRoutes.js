@@ -23,6 +23,13 @@ router
   .route('/updatePassword')
   .patch(authController.verify, authController.updatePassword);
 
+router.get(
+  '/me',
+  authController.verify,
+  userController.getMe,
+  userController.getOneUser
+);
+
 router
   .route('/')
   .get(userController.getAllUsers)

@@ -2,7 +2,7 @@ const catchAsync = require('../utils/catchAsync');
 const Tour = require('./../models/tourModel');
 const factory = require('./factoryHandlers');
 // const APIFeatures = require('./../utils/apiFeatures');
-// const AppError = require('../utils/appError');
+const AppError = require('../utils/appError');
 
 //CheckBody Middleware
 // eslint-disable-next-line consistent-return
@@ -131,5 +131,45 @@ exports.getMonthlyPlan = catchAsync(async (req, res, next) => {
     data: {
       monthlyData
     }
+  });
+});
+
+exports.toursNear = catchAsync(async (req, res, next) => {
+  const { distance, latlng, unit } = req.params;
+
+  const [lat, lng] = latlng.split(',');
+  // console.log(distance, latlng, unit);
+
+  // const meters = unit === 'mi' ? distance * 1609.34 : distance * 1000;
+  const radius = unit === 'mi' ? distance / 3963.2 : distance / 6378.1;
+  // console.log(meters);
+
+  if (!lat || !lng)
+    return next(
+      new AppError(
+        400,
+        'Provide latitude and longitude in the form: lat,lng!!!'
+      )
+    );
+
+  const tours = await Tour.find({
+    startLocation: { $geoWithin: { $centerSphere: [[lng, lat], radius] } }
+  });
+  // const tours = await Tour.find({
+  //   startLocation: {
+  //     $near: {
+  //       $geometry: {
+  //         type: 'Point',
+  //         coordinates: [lng, lat]
+  //       },
+  //       $maxDistance: meters,
+  //       $minDistance: 50
+  //     }
+  //   }
+  // });
+  return res.status(200).json({
+    status: 'success',
+    results: tours.length,
+    data: tours
   });
 });

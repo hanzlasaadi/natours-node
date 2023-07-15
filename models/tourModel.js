@@ -43,18 +43,21 @@ const tourSchema = mongoose.Schema(
       type: String,
       trim: true
     },
-    priceDiscount: Number,
-    ratingsAvg: {
+    priceDiscount: {
       type: Number,
-      default: 4.5,
-      max: [5, 'A rating max value can only be 5'],
-      min: [1, 'A rating min value can only be 1'],
       validate: {
         validator: function(val) {
           return val < this.price;
         },
         message: 'Discount ({VALUE}) must be lower than the price.'
       }
+    },
+    ratingsAvg: {
+      type: Number,
+      default: 4.5,
+      max: [5, 'A rating max value can only be 5'],
+      min: [1, 'A rating min value can only be 1'],
+      set: val => Math.round(val * 10) / 10 // 4.666, 46.666, 47, 4.7
     },
     ratingsQuantity: {
       type: Number,
@@ -107,6 +110,11 @@ const tourSchema = mongoose.Schema(
     toObject: { virtuals: true }
   }
 );
+
+// Indexes
+// tourSchema.index({ price: 1 });
+tourSchema.index({ price: 1, ratingsAvg: -1 });
+tourSchema.index({ slug: 1 });
 
 // Virtual Properties
 tourSchema.virtual('durationinWeeks').get(function() {

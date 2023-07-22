@@ -1,0 +1,17 @@
+doctype html
+html(lang='en')
+  head
+    meta(charset='utf-8')
+    title Natours | #{tour}
+    link(rel="stylesheet", href="css/style.css")
+    link(rel="shortcut icon", href="img/favicon.png", type="image/x-icon")
+  body
+    h1= tour
+    h2= user.toUpperCase()
+    //- h2= not going to show up
+    // h2= going to show up
+
+    - const x = 68
+    h3 #{x+1} <= this is fucked up 
+
+    p This is the real deal. Do not underestimate this course.

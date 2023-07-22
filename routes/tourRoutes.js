@@ -26,8 +26,12 @@ router
   );
 
 router
-  .route('/tours-distance/:distance/latlng/:latlng/unit/:unit')
+  .route('/tours-within/:distance/latlng/:latlng/unit/:unit')
   .get(tourController.toursNear);
+
+router
+  .route('/tours-distance/latlng/:latlng/unit/:unit')
+  .get(tourController.toursDistance);
 
 router
   .route('/')

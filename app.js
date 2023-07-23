@@ -8,6 +8,7 @@ const helmet = require('helmet');
 const mongoSanitize = require('express-mongo-sanitize');
 const xss = require('xss-clean');
 const hpp = require('hpp');
+const cookieParser = require('cookie-parser');
 
 const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
@@ -42,6 +43,7 @@ app.use('/api', limiter);
 
 //MIDDLEWARE: body parse - get access of request body on the request object - reading data from body into req.body
 app.use(express.json({ limit: '10kb' }));
+app.use(cookieParser());
 
 // Data sanitization - nosql injections
 app.use(mongoSanitize());
@@ -67,6 +69,7 @@ app.use((req, res, next) => {
   req.requestedTime = new Date().toISOString();
   // console.log(`Added requested time ${req.requestedTime} in the Request Object`);
   console.log('HELLOO......from the middleware');
+  // console.log(req.cookies);
   next();
 });
 

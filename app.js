@@ -12,6 +12,7 @@ const hpp = require('hpp');
 const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
 const reviewRouter = require('./routes/reviewRoutes');
+const viewRouter = require('./routes/viewRoutes');
 
 const AppError = require('./utils/appError');
 const errorController = require('./controllers/errController');
@@ -70,21 +71,8 @@ app.use((req, res, next) => {
 });
 
 // ROUTES
-app.get('/', (req, res) => {
-  res.status(200).render('base', {
-    title: 'Exciting tours for adventurous people'
-  });
-});
-app.get('/overview', (req, res) => {
-  res.status(200).render('overview', {
-    title: 'All the tours'
-  });
-});
-app.get('/tour', (req, res) => {
-  res.status(200).render('tour', {
-    title: 'The Park Camper Tour'
-  });
-});
+app.use('/', viewRouter);
+
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/reviews', reviewRouter);

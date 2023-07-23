@@ -72,8 +72,17 @@ app.use((req, res, next) => {
 // ROUTES
 app.get('/', (req, res) => {
   res.status(200).render('base', {
-    tour: 'The Park Camper',
-    user: 'Hanzla'
+    title: 'Exciting tours for adventurous people'
+  });
+});
+app.get('/overview', (req, res) => {
+  res.status(200).render('overview', {
+    title: 'All the tours'
+  });
+});
+app.get('/tour', (req, res) => {
+  res.status(200).render('tour', {
+    title: 'The Park Camper Tour'
   });
 });
 app.use('/api/v1/tours', tourRouter);

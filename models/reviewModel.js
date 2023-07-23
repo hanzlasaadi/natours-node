@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
 const Tour = require('./tourModel');
-const AppError = require('../utils/appError');
 
 const reviewSchema = mongoose.Schema(
   {
@@ -53,7 +52,7 @@ reviewSchema.pre(/^find/, function(next) {
 
   this.populate({
     path: 'user',
-    select: 'name image',
+    select: 'name photo',
     model: 'User'
   });
 
@@ -68,16 +67,16 @@ reviewSchema.statics.calcAvgRatings = async function(tourId) {
     {
       $group: {
         _id: '$tour',
-        numRatings: { $sum: 1 },
-        avgRatings: { $avg: '$rating' }
+        nRating: { $sum: 1 },
+        avgRating: { $avg: '$rating' }
       }
     }
   ]);
 
   if (stats.length > 0) {
     await Tour.findByIdAndUpdate(tourId, {
-      ratingsQuantity: stats[0].numRatings,
-      ratingsAvg: stats[0].avgRatings
+      ratingsQuantity: stats[0].nRating,
+      ratingsAvg: stats[0].avgRating
     });
   } else {
     await Tour.findByIdAndUpdate(tourId, {
@@ -96,8 +95,6 @@ reviewSchema.post('save', function() {
 reviewSchema.pre(/^findOneAnd/, async function(next) {
   this.r = await this.findOne();
 
-  if (!this.r)
-    return next(new AppError(404, "Could'nt find a review with this ID"));
   next();
 });
 

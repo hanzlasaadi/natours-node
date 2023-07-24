@@ -95,29 +95,41 @@ exports.verify = catchAsync(async function(req, res, next) {
   return next();
 });
 
-exports.isLoggedIn = catchAsync(async function(req, res, next) {
+exports.isLoggedIn = async function(req, res, next) {
   // 1. Checking if token is there
   if (req.cookies.jwt) {
-    // 2. Verification of the token
-    const decodedData = await promisify(jwt.verify)(
-      req.cookies.jwt,
-      process.env.SECRET_JWT
-    );
+    try {
+      // 2. Verification of the token
+      const decodedData = await promisify(jwt.verify)(
+        req.cookies.jwt,
+        process.env.SECRET_JWT
+      );
 
-    // 3. Finding user by token & checking if they still exists
-    const freshUser = await User.findById(decodedData.id);
-    if (!freshUser) return next();
-    // console.log(freshUser);
+      // 3. Finding user by token & checking if they still exists
+      const freshUser = await User.findById(decodedData.id);
+      if (!freshUser) return next();
+      // console.log(freshUser);
 
-    // 4. Check if user changed password after the token was issued.
-    if (freshUser.checkChangedPassword(decodedData.iat)) return next();
+      // 4. Check if user changed password after the token was issued.
+      if (freshUser.checkChangedPassword(decodedData.iat)) return next();
 
-    // Every Test is passed and user is verified
-    res.locals.user = freshUser;
-    return next();
+      // Every Test is passed and user is verified
+      res.locals.user = freshUser;
+      return next();
+    } catch (err) {
+      return next();
+    }
   }
   return next();
-});
+};
+
+exports.logout = (req, res, next) => {
+  res.cookie('jwt', 'Logged Out', {
+    expires: new Date(Date.now() + 10 * 1000),
+    httpOnly: true
+  });
+  res.status(200).json({ status: 'success' });
+};
 
 exports.checkAdmin = (...roles) => {
   return (req, res, next) => {

@@ -1,5 +1,6 @@
 const Tour = require('../models/tourModel');
 const catchAsync = require('../utils/catchAsync');
+const AppError = require('./../utils/appError');
 
 exports.getOverview = catchAsync(async (req, res) => {
   // 1. get tours data from database
@@ -20,17 +21,19 @@ exports.getOverview = catchAsync(async (req, res) => {
     });
 });
 
-exports.getTour = catchAsync(async (req, res) => {
+exports.getTour = catchAsync(async (req, res, next) => {
   // 1. get data for the requested tour - including guides & reviews
   const tourName = req.params.slug.replaceAll('-', ' ');
   const tour = await Tour.findOne({ name: tourName }).populate({
     path: 'reviews',
     fields: 'review rating user'
   });
+  if (!tour)
+    return next(new AppError(404, 'Could not find the requested tour!!!'));
   // console.log(tour);
   // 2. build the template - tour.pug
   // 3. render the pug file with data from (1)
-  res
+  return res
     .status(200)
     .set(
       'Content-Security-Policy',

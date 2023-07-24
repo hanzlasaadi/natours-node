@@ -25,27 +25,47 @@ const handleInvalidToken = () =>
 const handleExpiredToken = () =>
   new AppError(401, 'Expired Token. Please login again!');
 
-const prodErrorHandler = (res, err) => {
-  if (err.isOperational) {
-    res.status(err.statusCode).json({
-      status: err.status,
-      message: err.message
-    });
-  } else {
-    res.status(err.statusCode).json({
+const prodErrorHandler = (err, req, res) => {
+  if (req.originalUrl.startsWith('/api')) {
+    if (err.isOperational) {
+      return res.status(err.statusCode).json({
+        status: err.status,
+        message: err.message
+      });
+    }
+    return res.status(err.statusCode).json({
       status: 500,
       message:
         'Something went very verY veRY vERY VERY VERRYY VEERRRYYY VERRRRYY wrong!'
     });
   }
+
+  if (err.isOperational) {
+    return res.status(err.statusCode).render('error', {
+      title: 'Something went wrong!!!',
+      msg: err.message
+    });
+  }
+  return res.status(err.statusCode).render('error', {
+    title: 'Something went wrong!!!',
+    msg: 'Something went very verry wrong!!!⚠⚠💣💣'
+  });
 };
 
-const devErrorHandler = (res, err) => {
-  res.status(err.statusCode).json({
-    status: err.status,
-    error: err,
-    message: err.message,
-    stack: err.stack
+const devErrorHandler = (err, req, res) => {
+  // A) API
+  if (req.originalUrl.startsWith('/api')) {
+    return res.status(err.statusCode).json({
+      status: err.status,
+      error: err,
+      message: err.message,
+      stack: err.stack
+    });
+  }
+  // B) RENDERED PAGE
+  return res.status(err.statusCode).render('error', {
+    title: 'Something went wrong!',
+    msg: err.message
   });
 };
 
@@ -62,8 +82,8 @@ module.exports = (err, req, res, next) => {
     if (err.name === 'JsonWebTokenError') err = handleInvalidToken();
     if (err.name === 'TokenExpiredError') err = handleExpiredToken();
 
-    prodErrorHandler(res, err);
+    prodErrorHandler(err, req, res);
   } else if (process.env.NODE_ENV === 'development') {
-    devErrorHandler(res, err);
+    devErrorHandler(err, req, res);
   }
 };

@@ -62,6 +62,8 @@ exports.login = catchAsync(async function(req, res, next) {
   return tokenAndSendResponse(user, 200, res);
 });
 
+// exports.logout = () => logout();
+
 exports.verify = catchAsync(async function(req, res, next) {
   let token;
   // 1. Getting token and checking if its there
@@ -91,6 +93,7 @@ exports.verify = catchAsync(async function(req, res, next) {
     return next(new AppError('User changed password recently, Login again!!!'));
 
   // Every Test is passed and user is verified
+  res.locals.user = freshUser;
   req.user = freshUser;
   return next();
 });

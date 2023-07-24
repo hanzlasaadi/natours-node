@@ -12133,7 +12133,7 @@ var logout = /*#__PURE__*/function () {
           });
         case 3:
           res = _context.sent;
-          if (res.data.status === 'success') location.reload(true);
+          if (res.data.status === 'success') location.assign('/');
           _context.next = 11;
           break;
         case 7:

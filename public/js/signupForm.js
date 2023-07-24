@@ -11,6 +11,7 @@ const signup = async (name, email, password, passwordConfirm) => {
         passwordConfirm
       }
     });
+    console.log('Successfully Signed Up!!!');
   } catch (err) {
     console.log(err.response.data);
   }

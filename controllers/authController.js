@@ -95,6 +95,30 @@ exports.verify = catchAsync(async function(req, res, next) {
   return next();
 });
 
+exports.isLoggedIn = catchAsync(async function(req, res, next) {
+  // 1. Checking if token is there
+  if (req.cookies.jwt) {
+    // 2. Verification of the token
+    const decodedData = await promisify(jwt.verify)(
+      req.cookies.jwt,
+      process.env.SECRET_JWT
+    );
+
+    // 3. Finding user by token & checking if they still exists
+    const freshUser = await User.findById(decodedData.id);
+    if (!freshUser) return next();
+    // console.log(freshUser);
+
+    // 4. Check if user changed password after the token was issued.
+    if (freshUser.checkChangedPassword(decodedData.iat)) return next();
+
+    // Every Test is passed and user is verified
+    res.locals.user = freshUser;
+    return next();
+  }
+  return next();
+});
+
 exports.checkAdmin = (...roles) => {
   return (req, res, next) => {
     if (!roles.includes(req.user.role))

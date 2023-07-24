@@ -1,5 +1,8 @@
 /* eslint-disable */
-const signup = async (name, email, password, passwordConfirm) => {
+import axios from 'axios';
+import { showAlert } from './alerts';
+
+export const signup = async (name, email, password, passwordConfirm) => {
   try {
     const res = await axios({
       method: 'POST',
@@ -11,17 +14,14 @@ const signup = async (name, email, password, passwordConfirm) => {
         passwordConfirm
       }
     });
+    if (res.data.status === 'success') {
+      showAlert('success', 'Successfully Signed Up');
+      setTimeout(() => {
+        location.assign('/');
+      }, 950);
+    }
     console.log('Successfully Signed Up!!!');
   } catch (err) {
-    console.log(err.response.data);
+    showAlert('error', err.response.data.message);
   }
 };
-
-document.querySelector('.form').addEventListener('submit', async e => {
-  e.preventDefault();
-  const name = document.getElementById('name').value;
-  const email = document.getElementById('email').value;
-  const password = document.getElementById('password').value;
-  const passwordConfirm = document.getElementById('passwordConfirm').value;
-  signup(name, email, password, passwordConfirm);
-});

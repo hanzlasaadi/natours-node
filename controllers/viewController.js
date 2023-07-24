@@ -8,10 +8,16 @@ exports.getOverview = catchAsync(async (req, res) => {
   // 2. build the template - ✅ at 'overview.pug'
 
   // 3. render the final template with the data
-  res.status(200).render('overview', {
-    title: 'All the tours',
-    tours
-  });
+  res
+    .status(200)
+    .set(
+      'Content-Security-Policy',
+      "default-src 'self' ws://127.0.0.1:* ;base-uri 'self';block-all-mixed-content;font-src 'self' https: data:;frame-ancestors 'self';img-src 'self' data:;object-src 'none';script-src 'self' unsafe-eval 'self' blob: ;script-src-attr 'none';style-src 'self' https: 'unsafe-inline';upgrade-insecure-requests;"
+    )
+    .render('overview', {
+      title: 'All the tours',
+      tours
+    });
 });
 
 exports.getTour = catchAsync(async (req, res) => {
@@ -28,7 +34,7 @@ exports.getTour = catchAsync(async (req, res) => {
     .status(200)
     .set(
       'Content-Security-Policy',
-      "default-src 'self' https://*.mapbox.com ;base-uri 'self';block-all-mixed-content;font-src 'self' https: data:;frame-ancestors 'self';img-src 'self' data:;object-src 'none';script-src https://cdnjs.cloudflare.com https://api.mapbox.com 'self' blob: ;script-src-attr 'none';style-src 'self' https: 'unsafe-inline';upgrade-insecure-requests;"
+      "default-src 'self' https://*.mapbox.com ws://127.0.0.1:*;base-uri 'self';block-all-mixed-content;font-src 'self' https: data:;frame-ancestors 'self';img-src 'self' data:;object-src 'none';script-src https://cdnjs.cloudflare.com https://api.mapbox.com 'self' blob: ;script-src-attr 'none';style-src 'self' https: 'unsafe-inline';upgrade-insecure-requests;"
     )
     .render('tour', {
       title: tour.name,
@@ -41,7 +47,7 @@ exports.login = catchAsync(async (req, res) => {
     .status(200)
     .set(
       'Content-Security-Policy',
-      "default-src 'self' https://*.cloudfare.com ;base-uri 'self';block-all-mixed-content;font-src 'self' https: data:;frame-ancestors 'self';img-src 'self' data:;object-src 'none';script-src https://cdnjs.cloudflare.com https://cdnjs.cloudfare.com 'self' blob: ;script-src-attr 'none';style-src 'self' https: 'unsafe-inline';upgrade-insecure-requests;"
+      "default-src 'self' ws://127.0.0.1:* ;base-uri 'self';block-all-mixed-content;font-src 'self' https: data:;frame-ancestors 'self';img-src 'self' data:;object-src 'none';script-src 'self' unsafe-eval 'self' blob: ;script-src-attr 'none';style-src 'self' https: 'unsafe-inline';upgrade-insecure-requests;"
     )
     .render('login', {
       title: 'Login to your account'
@@ -53,7 +59,7 @@ exports.signup = catchAsync(async (req, res) => {
     .status(200)
     .set(
       'Content-Security-Policy',
-      "default-src 'self' https://*.cloudfare.com ;base-uri 'self';block-all-mixed-content;font-src 'self' https: data:;frame-ancestors 'self';img-src 'self' data:;object-src 'none';script-src https://cdnjs.cloudflare.com https://cdnjs.cloudfare.com 'self' blob: ;script-src-attr 'none';style-src 'self' https: 'unsafe-inline';upgrade-insecure-requests;"
+      "default-src 'self' ws://127.0.0.1:* ;base-uri 'self';block-all-mixed-content;font-src 'self' https: data:;frame-ancestors 'self';img-src 'self' data:;object-src 'none';script-src 'self' unsafe-eval 'self' blob: ;script-src-attr 'none';style-src 'self' https: 'unsafe-inline';upgrade-insecure-requests;"
     )
     .render('signup', {
       title: 'Create new account'

@@ -13,4 +13,10 @@ router.get('/login', viewController.login);
 router.get('/signup', viewController.signup);
 router.get('/tour/:slug', viewController.getTour);
 
+router.post(
+  '/update-user-data',
+  authController.verify,
+  viewController.updateUserData
+);
+
 module.exports = router;

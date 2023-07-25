@@ -5,7 +5,7 @@ import { signup } from './signupForm';
 import { logout } from './logout';
 import { displayMap } from './mapbox';
 
-const form = document.querySelector('.form');
+const form = document.querySelector('.form--login');
 const mapBox = document.getElementById('map');
 const logoutBtn = document.querySelector('.logout__btn');
 

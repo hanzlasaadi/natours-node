@@ -47,7 +47,7 @@ exports.updateMe = catchAsync(async (req, res, next) => {
   // 3. Find user and update & send response
   return res.status(200).json({
     status: 'success',
-    updatedUser
+    user: updatedUser
   });
 });
 

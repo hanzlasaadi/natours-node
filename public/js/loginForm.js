@@ -16,7 +16,7 @@ export const login = async (email, password) => {
       showAlert('success', 'Successfully Logged In');
       setTimeout(() => {
         location.assign('/');
-      }, 950);
+      }, 850);
     }
   } catch (err) {
     showAlert('error', err.response.data.message);

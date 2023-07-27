@@ -1,3 +1,4 @@
+/* eslint-disable import/no-extraneous-dependencies */
 const express = require('express');
 const userController = require('./../controllers/userController');
 const authController = require('./../controllers/authController');
@@ -18,7 +19,11 @@ router.route('/resetPassword/:token').patch(authController.resetPassword);
 router.use(authController.verify);
 // ☝ This verifies all routes after this middleware
 router.route('/logout').get(authController.logout);
-router.patch('/updateMe', userController.updateMe);
+router.patch(
+  '/updateMe',
+  userController.uploadUserPhoto,
+  userController.updateMe
+);
 router.delete('/deleteMe', userController.deleteMe);
 router.patch('/updatePassword', authController.updatePassword);
 router.get('/me', userController.getMe, userController.getOneUser);

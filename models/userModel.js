@@ -20,7 +20,10 @@ const userSchema = mongoose.Schema({
     lowerCase: true,
     validate: [validation.isEmail, 'Please input a proper email!']
   },
-  photo: String,
+  photo: {
+    type: String,
+    default: 'default.jpg'
+  },
   password: {
     type: String,
     required: [true, 'A user must have a password'],

@@ -1,3 +1,5 @@
+/* eslint-disable import/no-extraneous-dependencies */
+const multer = require('multer');
 const User = require('../models/userModel');
 const AppError = require('../utils/appError');
 const catchAsync = require('../utils/catchAsync');
@@ -15,6 +17,29 @@ const factory = require('./factoryHandlers');
 //   next();
 // };
 
+const multerStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, `public/img/users`);
+  },
+  filename: (req, file, cb) => {
+    const ext = file.mimetype.split('/')[1];
+    cb(null, `user-${req.user.id}-${Date.now()}.${ext}`);
+  }
+});
+
+const multerFilter = (req, file, cb) => {
+  if (file.mimetype.split('/')[0] === 'image') {
+    cb(null, true);
+  } else {
+    cb(
+      new AppError(400, 'Please upload an image. Example: .jpeg / .jpg'),
+      false
+    );
+  }
+};
+
+const upload = multer({ storage: multerStorage, fileFilter: multerFilter });
+
 const filterObject = (obj, ...fields) => {
   const newObj = {};
   Object.keys(obj).forEach(key => {
@@ -22,6 +47,8 @@ const filterObject = (obj, ...fields) => {
   });
   return newObj;
 };
+
+exports.uploadUserPhoto = upload.single('photo');
 
 exports.deleteMe = catchAsync(async function(req, res, next) {
   await User.findByIdAndUpdate(req.user._id, { active: false });
@@ -34,11 +61,16 @@ exports.deleteMe = catchAsync(async function(req, res, next) {
 
 exports.updateMe = catchAsync(async (req, res, next) => {
   // 1. Deny access if user enters password or confirm password
+  console.log('req file', req.file);
+  console.log('req body', req.body);
   if (req.body.password || req.body.confirmPassword) {
     return next(new AppError(400, "Can't change password!!!"));
   }
   // 2. Filter the req.body object to only contain required fields
   const filteredObj = filterObject(req.body, 'name', 'email');
+  if (req.file) filteredObj.photo = req.file.filename;
+
+  // update data on the database;
   const updatedUser = await User.findByIdAndUpdate(req.user._id, filteredObj, {
     new: true,
     runValidators: true

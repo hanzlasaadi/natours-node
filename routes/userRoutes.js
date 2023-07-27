@@ -22,6 +22,7 @@ router.route('/logout').get(authController.logout);
 router.patch(
   '/updateMe',
   userController.uploadUserPhoto,
+  userController.resizePhoto,
   userController.updateMe
 );
 router.delete('/deleteMe', userController.deleteMe);

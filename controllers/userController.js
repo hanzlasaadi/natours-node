@@ -1,5 +1,6 @@
 /* eslint-disable import/no-extraneous-dependencies */
 const multer = require('multer');
+const sharp = require('sharp');
 const User = require('../models/userModel');
 const AppError = require('../utils/appError');
 const catchAsync = require('../utils/catchAsync');
@@ -17,15 +18,18 @@ const factory = require('./factoryHandlers');
 //   next();
 // };
 
-const multerStorage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, `public/img/users`);
-  },
-  filename: (req, file, cb) => {
-    const ext = file.mimetype.split('/')[1];
-    cb(null, `user-${req.user.id}-${Date.now()}.${ext}`);
-  }
-});
+// const multerStorage = multer.diskStorage({
+//   destination: (req, file, cb) => {
+//     cb(null, `public/img/users`);
+//   },
+//   filename: (req, file, cb) => {
+//     const ext = file.mimetype.split('/')[1];
+//     cb(null, `user-${req.user.id}-${Date.now()}.${ext}`);
+//   }
+// });
+
+// storing uploaded image file in memory
+const multerStorage = multer.memoryStorage();
 
 const multerFilter = (req, file, cb) => {
   if (file.mimetype.split('/')[0] === 'image') {
@@ -50,6 +54,20 @@ const filterObject = (obj, ...fields) => {
 
 exports.uploadUserPhoto = upload.single('photo');
 
+exports.resizePhoto = (req, res, next) => {
+  if (!req.file) return next();
+
+  req.file.filename = `user-${req.user.id}-${Date.now()}.jpeg`;
+
+  sharp(req.file.buffer)
+    .resize(500, 500)
+    .toFormat('jpeg')
+    .jpeg({ quality: 50 })
+    .toFile(`public/img/users/${req.file.filename}`);
+
+  return next();
+};
+
 exports.deleteMe = catchAsync(async function(req, res, next) {
   await User.findByIdAndUpdate(req.user._id, { active: false });
   // console.log(req.user._id);
@@ -61,8 +79,6 @@ exports.deleteMe = catchAsync(async function(req, res, next) {
 
 exports.updateMe = catchAsync(async (req, res, next) => {
   // 1. Deny access if user enters password or confirm password
-  console.log('req file', req.file);
-  console.log('req body', req.body);
   if (req.body.password || req.body.confirmPassword) {
     return next(new AppError(400, "Can't change password!!!"));
   }

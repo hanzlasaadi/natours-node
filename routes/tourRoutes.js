@@ -48,6 +48,8 @@ router
   .patch(
     authController.verify,
     authController.checkAdmin('admin', 'lead-guide'),
+    tourController.uploadTourImages,
+    tourController.processTourImages,
     tourController.updateTour
   )
   .delete(

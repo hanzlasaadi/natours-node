@@ -16,13 +16,14 @@ block content
           +listEl('#', 'briefcase', 'My Bookings')
           +listEl('#', 'star', 'My Reviews')
           +listEl('#', 'credit-card', 'Billing')
-        .admin-nav
-          h5.admin-nav__heading Admin
-          ul.side-nav
-            +listEl('#', 'map', 'Manage tours')
-            +listEl('#', 'users', 'Manage users')
-            +listEl('#', 'star', 'Manage reviews')
-            +listEl('#', 'briefcase', 'Manage bookings')
+        - if (user.role === 'admin')
+          .admin-nav
+            h5.admin-nav__heading Admin
+            ul.side-nav
+              +listEl('#', 'map', 'Manage tours')
+              +listEl('#', 'users', 'Manage users')
+              +listEl('#', 'star', 'Manage reviews')
+              +listEl('#', 'briefcase', 'Manage bookings')
 
       .user-view__content
         .user-view__form-container

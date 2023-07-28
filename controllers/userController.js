@@ -54,19 +54,19 @@ const filterObject = (obj, ...fields) => {
 
 exports.uploadUserPhoto = upload.single('photo');
 
-exports.resizePhoto = (req, res, next) => {
+exports.resizePhoto = catchAsync(async (req, res, next) => {
   if (!req.file) return next();
 
   req.file.filename = `user-${req.user.id}-${Date.now()}.jpeg`;
 
-  sharp(req.file.buffer)
+  await sharp(req.file.buffer)
     .resize(500, 500)
     .toFormat('jpeg')
     .jpeg({ quality: 50 })
     .toFile(`public/img/users/${req.file.filename}`);
 
   return next();
-};
+});
 
 exports.deleteMe = catchAsync(async function(req, res, next) {
   await User.findByIdAndUpdate(req.user._id, { active: false });

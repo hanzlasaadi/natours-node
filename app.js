@@ -9,6 +9,7 @@ const mongoSanitize = require('express-mongo-sanitize');
 const xss = require('xss-clean');
 const hpp = require('hpp');
 const cookieParser = require('cookie-parser');
+const dotenv = require('dotenv');
 
 const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
@@ -24,6 +25,9 @@ app.set('view engine', 'pug');
 app.set('views', path.join(__dirname, 'views'));
 
 //-----GLOBAL MIDDLEWAREs-----
+// Extracting Environment Variables
+dotenv.config({ path: `${__dirname}/config.env` });
+
 //Serving static files
 app.use(express.static(path.join(__dirname, 'public')));
 

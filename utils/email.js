@@ -8,13 +8,20 @@ module.exports = class Email {
     this.to = user.email;
     this.firstName = user.name.split(' ')[0];
     this.url = url;
-    this.from = `Hanzla Saadi <${process.env.FROM}>`;
+    this.from = `${process.env.EMAIL_FROM}`;
   }
 
   newTransport() {
     if (process.env.NODE_ENV === 'production') {
       console.log('in production');
-      return 1;
+      return nodemailer.createTransport({
+        host: process.env.EMAIL_HOST_P,
+        port: process.env.EMAIL_PORT_P,
+        auth: {
+          user: process.env.EMAIL_USER_P,
+          pass: process.env.EMAIL_PASSWORD_P
+        }
+      });
     }
     return nodemailer.createTransport({
       host: process.env.EMAIL_HOST,
@@ -41,6 +48,7 @@ module.exports = class Email {
     const mailOptions = {
       from: this.from,
       to: this.to,
+      subject,
       html,
       text: htmlToText.convert(html)
     };

@@ -10,11 +10,13 @@ const xss = require('xss-clean');
 const hpp = require('hpp');
 const cookieParser = require('cookie-parser');
 const dotenv = require('dotenv');
+dotenv.config({ path: `${__dirname}/config.env` });
 
 const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
 const reviewRouter = require('./routes/reviewRoutes');
 const viewRouter = require('./routes/viewRoutes');
+const bookingRouter = require('./routes/bookingRoutes');
 
 const AppError = require('./utils/appError');
 const errorController = require('./controllers/errController');
@@ -26,7 +28,7 @@ app.set('views', path.join(__dirname, 'views'));
 
 //-----GLOBAL MIDDLEWAREs-----
 // Extracting Environment Variables
-dotenv.config({ path: `${__dirname}/config.env` });
+// dotenv.config({ path: `${__dirname}/config.env` });
 
 //Serving static files
 app.use(express.static(path.join(__dirname, 'public')));
@@ -84,6 +86,7 @@ app.use('/', viewRouter);
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/reviews', reviewRouter);
+app.use('/api/v1/bookings', bookingRouter);
 
 // ERROR Middleware
 app.all('*', (req, res, next) => {

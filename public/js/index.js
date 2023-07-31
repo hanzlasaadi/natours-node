@@ -5,12 +5,14 @@ import { signup } from './signupForm';
 import { logout } from './logout';
 import { displayMap } from './mapbox';
 import { updateInfo } from './updateInfo';
+import { bookTour } from './stripe';
 
 const form = document.querySelector('.form--login');
 const mapBox = document.getElementById('map');
 const logoutBtn = document.querySelector('.logout__btn');
 const formDataUpdate = document.querySelector('.form-user-data');
 const formPassUpdate = document.querySelector('.form-user-settings');
+const checkoutBtn = document.getElementById('book-tour');
 
 if (mapBox) displayMap(JSON.parse(mapBox.dataset.locations));
 
@@ -65,6 +67,14 @@ if (formPassUpdate) {
     document.getElementById('password-confirm').value = '';
 
     updateBtn.textContent = 'Save password';
+  });
+}
+
+if (checkoutBtn) {
+  checkoutBtn.addEventListener('click', e => {
+    e.target.textContent = 'Processing....';
+    const { tourId } = e.target.dataset;
+    bookTour(tourId);
   });
 }
 

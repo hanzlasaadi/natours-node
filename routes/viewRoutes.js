@@ -5,8 +5,6 @@ const bookingController = require('../controllers/bookingController');
 
 const router = express.Router();
 
-router.get('/me', authController.verify, viewController.getDashboard);
-
 router.get(
   '/',
   bookingController.createBookingCheckout,
@@ -20,10 +18,10 @@ router.get('/login', viewController.login);
 router.get('/signup', viewController.signup);
 router.get('/tour/:slug', viewController.getTour);
 
-router.post(
-  '/update-user-data',
-  authController.verify,
-  viewController.updateUserData
-);
+router.use(authController.verify);
+
+router.get('/my-tours', viewController.getMyTours);
+router.get('/me', viewController.getDashboard);
+router.post('/update-user-data', viewController.updateUserData);
 
 module.exports = router;

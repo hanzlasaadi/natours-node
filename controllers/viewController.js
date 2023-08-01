@@ -1,3 +1,4 @@
+const Booking = require('../models/bookingModel');
 const Tour = require('../models/tourModel');
 const User = require('../models/userModel');
 const catchAsync = require('../utils/catchAsync');
@@ -104,5 +105,27 @@ exports.updateUserData = catchAsync(async (req, res, next) => {
     .render('dashboard', {
       title: 'My Account',
       user: updatedUser
+    });
+});
+
+exports.getMyTours = catchAsync(async (req, res, next) => {
+  // 1. Find all Bookings of the current user
+  const myBookings = await Booking.find({ user: req.user.id });
+
+  // 2. Extract tourId's from all the bookings
+  const tourIds = myBookings.map(val => val.tour);
+
+  // 3. Find all tours based on the tourId's array
+  const tours = await Tour.find({ _id: { $in: tourIds } });
+
+  res
+    .status(200)
+    .set(
+      'Content-Security-Policy',
+      "default-src 'self' ws://127.0.0.1:* ;base-uri 'self';block-all-mixed-content;font-src 'self' https: data:;frame-ancestors 'self';img-src 'self' data:;object-src 'none';script-src 'self' unsafe-eval 'self' blob: ;script-src-attr 'none';style-src 'self' https: 'unsafe-inline';upgrade-insecure-requests;"
+    )
+    .render('overview', {
+      title: 'My Tours',
+      tours
     });
 });

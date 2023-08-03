@@ -3,3 +3,4 @@ node_modules
 temp.txt
 .eslintrc.json
 .cache
+config.env

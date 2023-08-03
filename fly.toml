@@ -1,0 +1,28 @@
+# fly.toml app configuration file generated for natours on 2023-08-04T02:13:16+05:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = "natours"
+primary_region = "lax"
+kill_signal = "SIGTERM"
+
+[env]
+  NODE_ENV = "production"
+  USER= "Hanzla"
+  JWT_EXPIRATION= "90d"
+  JWT_COOKIE_EXPIRATION=90
+  EMAIL_FROM= "hanzalasaadi@gmail.com"
+  EMAIL_HOST_P= "smtp-relay.brevo.com"
+  EMAIL_PORT_P=587
+  EMAIL_USER_P= "philjames802@gmail.com"
+
+[build]
+
+[http_service]
+  internal_port = 3000
+  force_https = true
+  auto_stop_machines = true
+  auto_start_machines = true
+  min_machines_running = 0
+  processes = ["app"]

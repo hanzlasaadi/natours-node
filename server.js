@@ -24,7 +24,7 @@ mongoose
     console.log('DB connection sucessfull!!!');
   });
 
-const port = process.env.PORT || 8080;
+const port = process.env.PORT || 3000;
 const server = app.listen(port, () => {
   console.log(`Listening on port ${port} and server is running...`);
 });
@@ -34,5 +34,12 @@ process.on('unhandledRejection', err => {
   console.log(err.code, err.message);
   server.close(() => {
     process.exit(1);
+  });
+});
+
+process.on('SIGTERM', () => {
+  console.log('🔫SIGTERM🔫 recieved. Shutting down gracefully✌☮🍑🦚!');
+  server.close(() => {
+    console.log('Server Closed🔐');
   });
 });

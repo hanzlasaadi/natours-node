@@ -7,7 +7,7 @@ export const updateInfo = async (obj, bool) => {
     const url = bool === 'password' ? 'updatePassword' : 'updateMe';
     const res = await axios({
       method: 'PATCH',
-      url: `http://127.0.0.1:6969/api/v1/users/${url}`,
+      url: `/api/v1/users/${url}`,
       data: obj
     });
 

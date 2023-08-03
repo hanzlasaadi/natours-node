@@ -63,7 +63,6 @@ exports.processTourImages = catchAsync(async (req, res, next) => {
 //CheckBody Middleware
 // eslint-disable-next-line consistent-return
 exports.checkBody = (req, res, next) => {
-  console.log('Checkbody middleware is working');
   if (!req.body)
     return res.status(400).send({
       status: 'fail',

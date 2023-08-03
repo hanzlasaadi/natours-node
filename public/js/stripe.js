@@ -6,9 +6,7 @@ import axios from 'axios';
 
 export const bookTour = async tourId => {
   try {
-    const session = await axios(
-      `http://127.0.0.1:6969/api/v1/bookings/checkout-session/${tourId}`
-    );
+    const session = await axios(`/api/v1/bookings/checkout-session/${tourId}`);
     if (session.data.status === 'success')
       window.location.assign(`${session.data.session.url}`);
   } catch (err) {

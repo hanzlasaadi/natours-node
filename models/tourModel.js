@@ -134,7 +134,7 @@ tourSchema.virtual('reviews', {
 tourSchema.pre('save', function(next) {
   // this.slug = this.name.toLowerCase().split(' ').join('-');
   this.slug = slugify(this.name);
-  console.log(this.slug);
+  // console.log(this.slug);
   next();
 });
 

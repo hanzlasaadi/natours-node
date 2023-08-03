@@ -9,7 +9,9 @@ const mongoSanitize = require('express-mongo-sanitize');
 const xss = require('xss-clean');
 const hpp = require('hpp');
 const cookieParser = require('cookie-parser');
+const compression = require('compression');
 const dotenv = require('dotenv');
+
 dotenv.config({ path: `${__dirname}/config.env` });
 
 const tourRouter = require('./routes/tourRoutes');
@@ -72,13 +74,16 @@ app.use(
   })
 );
 
-app.use((req, res, next) => {
-  req.requestedTime = new Date().toISOString();
-  // console.log(`Added requested time ${req.requestedTime} in the Request Object`);
-  console.log('HELLOO......from the middleware');
-  // console.log(req.cookies);
-  next();
-});
+// Compress text before response (except imgs, jpeg is already compressed)
+app.use(compression());
+
+// app.use((req, res, next) => {
+//   req.requestedTime = new Date().toISOString();
+//   // console.log(`Added requested time ${req.requestedTime} in the Request Object`);
+//   console.log('HELLOO......from the middleware');
+//   // console.log(req.cookies);
+//   next();
+// });
 
 // ROUTES
 app.use('/', viewRouter);

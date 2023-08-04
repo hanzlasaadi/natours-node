@@ -4,7 +4,7 @@ const hideAlert = () => {
   if (alert) alert.parentElement.removeChild(alert);
 };
 
-export const showAlert = (status, msg) => {
+export const showAlert = (status, msg, time = 7) => {
   hideAlert();
   document
     .querySelector('body')
@@ -12,5 +12,5 @@ export const showAlert = (status, msg) => {
       'afterbegin',
       `<div class='alert alert--${status}'>${msg}</div>`
     );
-  window.setTimeout(hideAlert, 4000);
+  window.setTimeout(hideAlert, time * 1000);
 };

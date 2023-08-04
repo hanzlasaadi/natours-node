@@ -6,6 +6,7 @@ import { logout } from './logout';
 import { displayMap } from './mapbox';
 import { updateInfo } from './updateInfo';
 import { bookTour } from './stripe';
+import { showAlert } from './alerts';
 
 const formLogin = document.querySelector('.form--login');
 const formSignup = document.querySelector('.form--signup');
@@ -14,6 +15,7 @@ const logoutBtn = document.querySelector('.logout__btn');
 const formDataUpdate = document.querySelector('.form-user-data');
 const formPassUpdate = document.querySelector('.form-user-settings');
 const checkoutBtn = document.getElementById('book-tour');
+const alertMsg = document.querySelector('body').dataset.alert;
 
 if (mapBox) displayMap(JSON.parse(mapBox.dataset.locations));
 
@@ -85,3 +87,5 @@ if (checkoutBtn) {
 }
 
 if (logoutBtn) logoutBtn.addEventListener('click', logout);
+
+if (alertMsg) showAlert('success', alertMsg, 15);

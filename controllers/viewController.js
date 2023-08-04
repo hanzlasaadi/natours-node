@@ -4,6 +4,16 @@ const User = require('../models/userModel');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('./../utils/appError');
 
+exports.alerts = (req, res, next) => {
+  const { alert } = req.query;
+  // if (!alert) next();
+  if (alert === 'booking') {
+    res.locals.alert =
+      'Your booking was successful. Check your email for confirmation!! Thanks for giving us money!!!';
+  }
+  next();
+};
+
 exports.getOverview = catchAsync(async (req, res) => {
   // 1. get tours data from database
   const tours = await Tour.find();

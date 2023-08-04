@@ -3,8 +3,8 @@ const stripe = require('stripe')(`${process.env.STRIPE_PRIVATE}`);
 const catchAsync = require('../utils/catchAsync');
 const Tour = require('../models/tourModel');
 const Booking = require('../models/bookingModel');
-const AppError = require('../utils/appError');
 const User = require('../models/userModel');
+// const AppError = require('../utils/appError');
 
 exports.getCheckoutSession = catchAsync(async (req, res, next) => {
   // 1. Find the tour which he/she is trying to buy
@@ -13,7 +13,7 @@ exports.getCheckoutSession = catchAsync(async (req, res, next) => {
   // 2. Create Stripe checkout session
   const checkoutSession = await stripe.checkout.sessions.create({
     payment_method_types: ['card'],
-    success_url: `${req.protocol}://${req.get('host')}/my-tours`,
+    success_url: `${req.protocol}://${req.get('host')}/my-tours?alert=booking`,
     cancel_url: `${req.protocol}://${req.get('host')}/tour/${
       checkoutTour.slug
     }`,
@@ -60,7 +60,7 @@ exports.getCheckoutSession = catchAsync(async (req, res, next) => {
 
 const createBookingCheckout = async session => {
   const tour = session.client_reference_id;
-  const price = session.line_items[0].price_data.unit_amount / 100;
+  const price = session.amount_subtotal / 100;
   const user = (await User.findOne({ email: session.customer_email })).id;
 
   await Booking.create({ tour, user, price });
@@ -83,20 +83,23 @@ exports.webhookCheckout = catchAsync(async (req, res, next) => {
   }
 
   // Handle the event
-  switch (event.type) {
-    case 'checkout.session.completed':
-      // Then define and call a function to handle the event checkout.session.completed
-      createBookingCheckout(event.data.object);
-      break;
-    default:
-      console.log(`Unhandled event type ${event.type}`);
-      next(
-        new AppError(
-          400,
-          'Could not create a completed checkout in the database!'
-        )
-      );
-  }
+  // switch (event.type) {
+  //   case 'checkout.session.completed':
+  //     // Then define and call a function to handle the event checkout.session.completed
+  //     createBookingCheckout(event.data.object);
+  //     break;
+  //   default:
+  //     console.log(`Unhandled event type ${event.type}`);
+  //     next(
+  //       new AppError(
+  //         400,
+  //         'Could not create a completed checkout in the database!'
+  //       )
+  //     );
+  // }
+
+  if (event.type === 'checkout.session.completed')
+    createBookingCheckout(event.data.object);
 
   // Return a 200 res to acknowledge receipt of the event
   res.status(200).json({ received: true });

@@ -22,6 +22,7 @@ const bookingRouter = require('./routes/bookingRoutes');
 
 const AppError = require('./utils/appError');
 const errorController = require('./controllers/errController');
+const bookingController = require('./controllers/bookingController');
 
 const app = express();
 
@@ -48,6 +49,13 @@ const limiter = rateLimit({
   message: 'Too many requests from this IP. Try again after an hour!'
 });
 app.use('/api', limiter);
+
+// Listening to webhook route (before body parser middleware happens)
+app.post(
+  '/webhook-checkout',
+  express.raw({ type: 'application/json' }),
+  bookingController.webhookCheckout
+);
 
 //MIDDLEWARE: body parse - get access of request body on the request object - reading data from body into req.body
 app.use(express.json({ limit: '10kb' }));

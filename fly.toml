@@ -5,7 +5,7 @@
 
 app = "natours"
 primary_region = "lax"
-kill_signal = "SIGTERM"
+kill_timeout = 120
 
 [env]
   NODE_ENV = "production"

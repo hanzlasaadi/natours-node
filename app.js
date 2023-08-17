@@ -11,6 +11,7 @@ const hpp = require('hpp');
 const cookieParser = require('cookie-parser');
 const compression = require('compression');
 const dotenv = require('dotenv');
+const cors = require('cors');
 
 dotenv.config({ path: `${__dirname}/config.env` });
 
@@ -33,6 +34,9 @@ app.set('views', path.join(__dirname, 'views'));
 //-----GLOBAL MIDDLEWAREs-----
 // Extracting Environment Variables
 // dotenv.config({ path: `${__dirname}/config.env` });
+
+// CORS Policy
+app.use(cors()); // access control allow origin = *
 
 //Serving static files
 app.use(express.static(path.join(__dirname, 'public')));

@@ -16,6 +16,7 @@ kill_timeout = 120
   EMAIL_HOST_P= "smtp-relay.brevo.com"
   EMAIL_PORT_P=587
   EMAIL_USER_P= "philjames802@gmail.com"
+  aitMail= "aitdevelopers786@gmail.com"
 
 [build]
 
@@ -24,5 +25,5 @@ kill_timeout = 120
   force_https = true
   auto_stop_machines = true
   auto_start_machines = true
-  min_machines_running = 1
+  min_machines_running = 0
   processes = ["app"]

@@ -1,0 +1,35 @@
+extends baseEmail
+
+block content
+  p Hi #{firstName}
+  p 
+    | Welcome to 
+    strong AIT Developers
+    | , we're glad to have you 🎉🙏
+  p 
+    | My name is Hanzla Saadi, and I’m your point-of-contact for getting up-and-running with our services. Over the next few weeks, I’ll be sending you a few more emails to help you gain maximum value from 
+    strong AIT Developers.
+  p For starters, you might find these resources helpful for getting going:
+  table.btn.btn-primary(role='presentation', border='0', cellpadding='0', cellspacing='0')
+    tbody
+      tr
+        td(align='left')
+          table(role='presentation', border='0', cellpadding='10px', cellspacing='10px')
+            tbody
+              tr
+                td
+                  a(href='https://aitdevelopers.com/projects.html', target='_blank') Previous Projects
+                td
+                  a(href='https://aitdevelopers.com/assets/brochure.pdf', target='_blank') Company Brochure
+              tr
+                td
+                  a(href='tel:+923154904380', target='_blank') WhatsApp
+                td
+                  a(href='tel:+923244904380', target='_blank') Phone
+  p
+    | If you have any difficulties with these communication means, we can schedule an onboarding call in a few days, and I can walk you through our work process and you can meet directly with the 
+    strong CEO, Muhammad Talha Adeel
+    |  to discuss your project.
+  p In the meantime, send us your project details and other related info and we will reply as soon as possible.
+  p Regards,
+  p Talha Adeel, CEO

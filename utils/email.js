@@ -13,7 +13,7 @@ module.exports = class Email {
 
   newTransport() {
     if (process.env.NODE_ENV === 'production') {
-      console.log('in production');
+      // console.log('in production');
       return nodemailer.createTransport({
         host: process.env.EMAIL_HOST_P,
         port: process.env.EMAIL_PORT_P,
@@ -58,13 +58,20 @@ module.exports = class Email {
   }
 
   async welcomeMail() {
-    await this.send('welcome', 'Welcome to the MFing Natours Family...');
+    await this.send('welcome', 'Welcome to the Natours Family...');
   }
 
   async forgotPassMail() {
     await this.send(
       'forgotPass',
       'Your Password Reset URL. (Valid for only 10 min)'
+    );
+  }
+
+  async aitWelcome() {
+    await this.send(
+      'aitWelcome',
+      'Thank You for Reaching Out to AIT Developers!'
     );
   }
 };
